@@ -1,0 +1,127 @@
+...FF............................FF..................................... [ 15%]
+...........................................F.F....................F..... [ 30%]
+.......F................................................................ [ 45%]
+....FFFF................................................................ [ 60%]
+.F...F.................................................................. [ 75%]
+........................................................................ [ 90%]
+...........F.................................                            [100%]
+================================== FAILURES ===================================
+______________ test_gui_adjacent_export_and_exact_latest_result _______________
+test_export_eq_v08.py:140: in test_gui_adjacent_export_and_exact_latest_result
+    assert eq.result is None and not eq.export.isEnabled()
+E   AssertionError: assert (RemixEQResult(hz=array([  60.05859375,   60.63583968,   61.21863374,   61.80702925,\n         62.40108005,   63.0008405...EVIEW_READY', fs=48000, source='4,8 ms delay-1', warnings=('METRIC_REJECTION_GAIN_REFIT', 'CORRECTED_PEAK_REFINEMENT')) is None)
+E    +  where RemixEQResult(hz=array([  60.05859375,   60.63583968,   61.21863374,   61.80702925,\n         62.40108005,   63.0008405...EVIEW_READY', fs=48000, source='4,8 ms delay-1', warnings=('METRIC_REJECTION_GAIN_REFIT', 'CORRECTED_PEAK_REFINEMENT')) = <signal_tools_gui_v813.EQDialog object at 0x00000269761B30A0>.result
+_________ test_top_bar_export_is_adjacent_and_opens_same_latest_table _________
+test_export_eq_v08.py:157: in test_top_bar_export_is_adjacent_and_opens_same_latest_table
+    assert tuple(hub.buttons.keys())==("phase","eq","export","fir")
+E   AssertionError: assert ('phase', 'eq', 'fir') == ('phase', 'eq...xport', 'fir')
+E     
+E     At index 2 diff: 'fir' != 'export'
+E     Right contains one more item: 'fir'
+E     Use -v to get more diff
+__________ test_gui_one_tick_without_autophase_pair_and_safely_clear __________
+test_v16_independent_one_tick.py:100: in test_gui_one_tick_without_autophase_pair_and_safely_clear
+    assert not hub.buttons["export"].isEnabled()
+               ^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'export'
+_______________ test_gui_verified_count_zero_two_six_and_expiry _______________
+test_v16_independent_one_tick.py:125: in test_gui_verified_count_zero_two_six_and_expiry
+    assert not hub.buttons["export"].isEnabled()
+               ^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'export'
+_________________ test_corrupt_or_missing_config_fails_closed _________________
+test_v841_smaart_fs_auto.py:50: in test_corrupt_or_missing_config_fails_closed
+    assert read_saved_smaart_fs(p) is None
+E   AssertionError: assert SavedSmaartFs(hz=48000, modified_ns=1793669103610255500, size=219, source='C:\\Users\\Admin\\AppData\\Local\\Temp\\pytest-of-Admin\\pytest-479\\test_corrupt_or_missing_config0\\SmaartConfig.xml') is None
+E    +  where SavedSmaartFs(hz=48000, modified_ns=1793669103610255500, size=219, source='C:\\Users\\Admin\\AppData\\Local\\Temp\\pytest-of-Admin\\pytest-479\\test_corrupt_or_missing_config0\\SmaartConfig.xml') = read_saved_smaart_fs(WindowsPath('C:/Users/Admin/AppData/Local/Temp/pytest-of-Admin/pytest-479/test_corrupt_or_missing_config0/SmaartConfig.xml'))
+________ test_eq_panel_replaces_two_input_boxes_with_native_drag_lines ________
+test_v842_eq_roi_drag_native.py:51: in test_eq_panel_replaces_two_input_boxes_with_native_drag_lines
+    assert eq.filter_count.prefix()=="Max PEQ "
+E   AssertionError: assert 'S\u1ed1 PEQ t\u1ed1i \u0111a ' == 'Max PEQ '
+E     
+E     - Max PEQ 
+E     + S\u1ed1 PEQ t\u1ed1i \u0111a
+_____ test_native_shared_frame_requires_mag_source_and_phase_independent ______
+test_v846_fir_native.py:183: in test_native_shared_frame_requires_mag_source_and_phase_independent
+    assert engine.graph_phase.fir_source is src
+E   AssertionError: assert None is FIRSource(revision=3, source_name='TUNNINNGGG-12', identity='3ad6c9c179295ff466ea665e5e33b963d1f7511ddd730bc45230b30aa...      -166.21854336, -150.56431119, -151.03287329, -151.37736493,\n        171.49433225, -142.37183245, -157.92642333]))
+E    +  where None = <overlay_v7.SumGraph object at 0x000002697B6FCA60>.fir_source
+E    +    where <overlay_v7.SumGraph object at 0x000002697B6FCA60> = <overlay_v7.App object at 0x000002697B6F3F40>.graph_phase
+__________ test_transient_scan_suspends_display_not_source_identity ___________
+test_v848_mageq_no_blink.py:90: in test_transient_scan_suspends_display_not_source_identity
+    assert obs.current_single()==(*candidate,23)
+           ^^^^^^^^^^^^^^^^^^^^
+live_sync_v7.py:148: in current_single
+    not 0<=time.perf_counter()-self.row_seen_at.get(enabled[0],-1e30)<=1.5 or
+                               ^^^^^^^^^^^^^^^^
+E   AttributeError: 'LiveDataBarV7' object has no attribute 'row_seen_at'
+______ test_visual_modes_share_shell_but_keep_unique_colors[fir-#65DAFF] ______
+test_v856_unified_three_tool_layout.py:33: in test_visual_modes_share_shell_but_keep_unique_colors
+    assert hub.dock.heading.text().startswith(
+E   AssertionError: assert False
+E    +  where False = <built-in method startswith of str object at 0x000002697B3DCEB0>('FIR')
+E    +    where <built-in method startswith of str object at 0x000002697B3DCEB0> = 'AUTO FIR'.startswith
+E    +      where 'AUTO FIR' = <built-in method text of QLabel object at 0x000002697B475C60>()
+E    +        where <built-in method text of QLabel object at 0x000002697B475C60> = <PyQt6.QtWidgets.QLabel object at 0x000002697B475C60>.text
+E    +          where <PyQt6.QtWidgets.QLabel object at 0x000002697B475C60> = <signal_tools_gui_v813.RightToolDock object at 0x000002697B475BD0>.heading
+E    +            where <signal_tools_gui_v813.RightToolDock object at 0x000002697B475BD0> = <signal_tools_gui_v813.ToolHub object at 0x000002697B482EF0>.dock
+________ test_primary_actions_above_results_visible_on_first_panel[eq] ________
+test_v856_unified_three_tool_layout.py:56: in test_primary_actions_above_results_visible_on_first_panel
+    assert len(panel._ux_sections)==3
+E   assert 2 == 3
+E    +  where 2 = len([<PyQt6.QtWidgets.QLabel object at 0x000002697B419BD0>, <PyQt6.QtWidgets.QLabel object at 0x000002697B419C60>])
+E    +    where [<PyQt6.QtWidgets.QLabel object at 0x000002697B419BD0>, <PyQt6.QtWidgets.QLabel object at 0x000002697B419C60>] = <signal_tools_gui_v813.EQDialog object at 0x000002697B448310>._ux_sections
+_______ test_primary_actions_above_results_visible_on_first_panel[fir] ________
+test_v856_unified_three_tool_layout.py:51: in test_primary_actions_above_results_visible_on_first_panel
+    assert panel.calculate.geometry().y()<300
+E   assert 336 < 300
+E    +  where 336 = <built-in method y of QRect object at 0x000002697B4057E0>()
+E    +    where <built-in method y of QRect object at 0x000002697B4057E0> = PyQt6.QtCore.QRect(6, 336, 178, 30).y
+E    +      where PyQt6.QtCore.QRect(6, 336, 178, 30) = <built-in method geometry of QPushButton object at 0x000002697B430310>()
+E    +        where <built-in method geometry of QPushButton object at 0x000002697B430310> = <PyQt6.QtWidgets.QPushButton object at 0x000002697B430310>.geometry
+E    +          where <PyQt6.QtWidgets.QPushButton object at 0x000002697B430310> = <signal_tools_gui_v813.FIRDialog object at 0x000002697B4535B0>.calculate
+____________ test_eq_live_controls_preserved_with_compact_gain_row ____________
+test_v856_unified_three_tool_layout.py:67: in test_eq_live_controls_preserved_with_compact_gain_row
+    assert eq._ux_gain_row.count()==4
+E   assert 2 == 4
+E    +  where 2 = <built-in method count of QVBoxLayout object at 0x000002697B42FC70>()
+E    +    where <built-in method count of QVBoxLayout object at 0x000002697B42FC70> = <PyQt6.QtWidgets.QVBoxLayout object at 0x000002697B42FC70>.count
+E    +      where <PyQt6.QtWidgets.QVBoxLayout object at 0x000002697B42FC70> = <signal_tools_gui_v813.EQDialog object at 0x000002697B42C310>._ux_gain_row
+__________ test_real_hub_uses_safe_slot_instead_of_legacy_tf_overlap __________
+test_v869_smaart8_safe_dock.py:49: in test_real_hub_uses_safe_slot_instead_of_legacy_tf_overlap
+    assert hub._panel_mode=="v8-native-sidebar"
+E   AssertionError: assert 'dock' == 'v8-native-sidebar'
+E     
+E     - v8-native-sidebar
+E     + dock
+_______________ test_qt_hub_v8_three_buttons_and_native_layout ________________
+test_v870_v8_native_sidebar.py:43: in test_qt_hub_v8_three_buttons_and_native_layout
+    assert hub._toolbar_mode=="full"
+E   AssertionError: assert 'menu' == 'full'
+E     
+E     - full
+E     + menu
+_________________ test_frozen_assets_are_present_and_readable _________________
+test_v879_package_assets.py:19: in test_frozen_assets_are_present_and_readable
+    assert (packaged / name).is_file(), name
+E   AssertionError: remix_dou_swirl_toolbar32.png
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = (WindowsPath('D:/REMIX_AUTO_ALIGN_V6_DEV/windows_v8_84_LOGIC_FIX_QA/dist/RemiXDuo_QA/_internal') / 'remix_dou_swirl_toolbar32.png').is_file
+=========================== short test summary info ===========================
+FAILED test_export_eq_v08.py::test_gui_adjacent_export_and_exact_latest_result
+FAILED test_export_eq_v08.py::test_top_bar_export_is_adjacent_and_opens_same_latest_table
+FAILED test_v16_independent_one_tick.py::test_gui_one_tick_without_autophase_pair_and_safely_clear
+FAILED test_v16_independent_one_tick.py::test_gui_verified_count_zero_two_six_and_expiry
+FAILED test_v841_smaart_fs_auto.py::test_corrupt_or_missing_config_fails_closed
+FAILED test_v842_eq_roi_drag_native.py::test_eq_panel_replaces_two_input_boxes_with_native_drag_lines
+FAILED test_v846_fir_native.py::test_native_shared_frame_requires_mag_source_and_phase_independent
+FAILED test_v848_mageq_no_blink.py::test_transient_scan_suspends_display_not_source_identity
+FAILED test_v856_unified_three_tool_layout.py::test_visual_modes_share_shell_but_keep_unique_colors[fir-#65DAFF]
+FAILED test_v856_unified_three_tool_layout.py::test_primary_actions_above_results_visible_on_first_panel[eq]
+FAILED test_v856_unified_three_tool_layout.py::test_primary_actions_above_results_visible_on_first_panel[fir]
+FAILED test_v856_unified_three_tool_layout.py::test_eq_live_controls_preserved_with_compact_gain_row
+FAILED test_v869_smaart8_safe_dock.py::test_real_hub_uses_safe_slot_instead_of_legacy_tf_overlap
+FAILED test_v870_v8_native_sidebar.py::test_qt_hub_v8_three_buttons_and_native_layout
+FAILED test_v879_package_assets.py::test_frozen_assets_are_present_and_readable
+15 failed, 462 passed in 104.60s (0:01:44)

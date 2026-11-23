@@ -1,0 +1,49 @@
+[
+  {
+    "id": "FIR_FLAT_UNITY",
+    "defect": true,
+    "expected": "0dB within 0.25dB on flat input",
+    "measured": {
+      "1000.0": -0.018639810853635537,
+      "10000.0": -2.0106896248021315,
+      "16000.0": -6.020622630243988
+    }
+  },
+  {
+    "id": "REDIRECTED_SUITE9_FS",
+    "defect": true,
+    "expected": 96000,
+    "measured": 48000
+  },
+  {
+    "id": "UNSEEN_SELECTED_ROW_REAUTHORIZED",
+    "defect": true,
+    "expected": "No fresh authorization without observing selected row",
+    "measured": {
+      "authorized": true,
+      "selected_row": 0,
+      "only_observed_row": 1
+    }
+  },
+  {
+    "id": "PURE_DELAY_INTERPOLATION",
+    "defect": true,
+    "expected": "Unit amplitude for unit-amplitude pure delay",
+    "measured": {
+      "at_hz": 105,
+      "magnitude": 0.8090169943749479,
+      "error_db": -1.8408471082800442
+    }
+  },
+  {
+    "id": "FIR_LAYOUT_OVERLAP",
+    "defect": true,
+    "expected": "No details/profile overlap",
+    "measured": {
+      "overlap": true,
+      "height": 570,
+      "layout_minimum": 594
+    }
+  }
+]
+CONFIRMED_DEFECTS 5

@@ -1,0 +1,21 @@
+Metadata-Version: 2.4
+Name: remix-duo
+Version: 8.150.0
+Requires-Python: <3.12,>=3.11
+Requires-Dist: numpy==1.26.4
+Requires-Dist: scipy==1.17.1
+Requires-Dist: PyQt6==6.11.0
+Requires-Dist: cryptography<47,>=43
+Provides-Extra: windows
+Requires-Dist: pywin32>=306; sys_platform == "win32" and extra == "windows"
+Requires-Dist: pywinauto>=0.6.9; sys_platform == "win32" and extra == "windows"
+Requires-Dist: Pillow>=10; extra == "windows"
+Provides-Extra: macos
+Requires-Dist: pyobjc-framework-Cocoa>=11; sys_platform == "darwin" and extra == "macos"
+Requires-Dist: pyobjc-framework-Quartz>=11; sys_platform == "darwin" and extra == "macos"
+Requires-Dist: pyobjc-framework-ApplicationServices>=11; sys_platform == "darwin" and extra == "macos"
+Requires-Dist: pyobjc-framework-ScreenCaptureKit>=11; sys_platform == "darwin" and extra == "macos"
+Provides-Extra: test
+Requires-Dist: pytest<9,>=8; extra == "test"
+Provides-Extra: build
+Requires-Dist: pyinstaller<7,>=6.11; extra == "build"

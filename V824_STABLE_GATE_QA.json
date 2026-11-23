@@ -1,0 +1,26 @@
+{
+  "pass": "V824_STATE_MACHINE_250_POLL",
+  "polls": 275,
+  "snapshot": {
+    "t": 596.578,
+    "verified": 108,
+    "rows": 108,
+    "active_count": 2,
+    "active_names": [
+      "C:\\Users\\Admin\\Documents\\Smaart Suite\\Data\\Transfer Function\\Session Data\\4,8 ms delay-1.trf",
+      "C:\\Users\\Admin\\Documents\\Smaart Suite\\Data\\Transfer Function\\Session Data\\0 delay-1.trf"
+    ],
+    "pair_candidate": [
+      "C:\\Users\\Admin\\Documents\\Smaart Suite\\Data\\Transfer Function\\Session Data\\4,8 ms delay-1.trf",
+      "C:\\Users\\Admin\\Documents\\Smaart Suite\\Data\\Transfer Function\\Session Data\\0 delay-1.trf"
+    ],
+    "state": "valid",
+    "stable": 3,
+    "reason": "TWO_CHECKED_VERIFIED",
+    "committed_pair": [
+      "C:\\Users\\Admin\\Documents\\Smaart Suite\\Data\\Transfer Function\\Session Data\\4,8 ms delay-1.trf",
+      "C:\\Users\\Admin\\Documents\\Smaart Suite\\Data\\Transfer Function\\Session Data\\0 delay-1.trf"
+    ],
+    "changed": true
+  }
+}

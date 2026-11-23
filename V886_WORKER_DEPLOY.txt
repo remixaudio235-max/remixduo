@@ -1,0 +1,15 @@
+
+ ⛅️ wrangler 4.156.1 (update available 4.156.2)
+───────────────────────────────────────────────
+Total Upload: 164.11 KiB / gzip: 42.40 KiB
+Worker Startup Time: 8 ms
+Your Worker has access to the following bindings:
+Binding                                                 Resource
+env.DB (remix_duo_license_db)                           D1 Database
+env.PUBLIC_APP_NAME ("RemiX Duo License Admin")         Environment Variable
+env.PUBLIC_APP_VERSION ("8.77")                         Environment Variable
+
+Uploaded remix-duo-license (3.41 sec)
+Deployed remix-duo-license triggers (0.88 sec)
+  https://remix-duo-license.remixaudio235.workers.dev
+Current Version ID: ddee1525-2532-4f00-ad6a-e37b403975fb

@@ -1,0 +1,134 @@
+{
+  "build": {
+    "architecture": "arm64",
+    "source_sha256": "31e2afc6c0ee809637edf7d877020a3c33320b0da8188f755b9306d1b6768e66",
+    "shared_tests": true,
+    "frozen_selfcheck": true,
+    "native_smaart": false,
+    "clean_install": false,
+    "signed_public_release": false,
+    "dmg_sha256": "1aa6ae6852074ce84dffafcdf856a75c4e4467707f286a3a5471a7d728107a7d",
+    "native_binary_count": 222
+  },
+  "install": {
+    "app": "/Users/dinhtran/Applications/RemiXDuo_V886_QA.app",
+    "dmg_sha256": "1aa6ae6852074ce84dffafcdf856a75c4e4467707f286a3a5471a7d728107a7d",
+    "user_folder_install_selfcheck": true,
+    "selfcheck": {
+      "version": "8.86",
+      "platform": "MAC",
+      "qt": "6.11.0",
+      "numpy": "1.26.4",
+      "scipy": "1.17.1",
+      "missing_assets": [],
+      "native": "HOLD: native services available; trace/axis per-frame verification required",
+      "mode": "stored_trf_offline_alpha"
+    },
+    "full_live_gui": false
+  },
+  "native_probe": {
+    "permissions": {
+      "frameworks": true,
+      "accessibility": true,
+      "screen_capture": true
+    },
+    "windows": [
+      {
+        "ref": {
+          "platform": "darwin",
+          "pid": 18104,
+          "process_started": "1793678524.880745",
+          "opaque_id": "20059"
+        },
+        "rect": [
+          0,
+          0,
+          1440,
+          900
+        ],
+        "title": "Smaart",
+        "foreground": true,
+        "on_screen": true,
+        "version": "9.6.0"
+      },
+      {
+        "ref": {
+          "platform": "darwin",
+          "pid": 18104,
+          "process_started": "1793678524.880745",
+          "opaque_id": "20050"
+        },
+        "rect": [
+          320,
+          157,
+          800,
+          550
+        ],
+        "title": "Smaart Suite",
+        "foreground": true,
+        "on_screen": false,
+        "version": "9.6.0"
+      }
+    ],
+    "ax_roles": {
+      "AXWindow": 1,
+      "AXButton": 43,
+      "AXGroup": 37,
+      "AXStaticText": 10,
+      "AXTextArea": 5,
+      "AXOutline": 1,
+      "AXRow": 232,
+      "AXScrollBar": 2,
+      "AXPopUpButton": 5
+    },
+    "ax_complete": true,
+    "ax_elapsed": 0.060991541016846895,
+    "selection": {
+      "window": {
+        "platform": "darwin",
+        "pid": 18104,
+        "process_started": "1793678524.880745",
+        "opaque_id": "20059"
+      },
+      "selected": [],
+      "observed_at": 667438.850858083,
+      "complete": false,
+      "visible_verified": []
+    },
+    "capture": {
+      "width": 1440,
+      "height": 900,
+      "age": 0.16928862500935793,
+      "bytes": 533395
+    }
+  },
+  "final_tests": {
+    "windows_shared_pass": 45,
+    "mac_shared_pass": 43,
+    "mac_windows_only_skips": 2,
+    "windows_legacy_pass": 477,
+    "windows_frozen_artifact_skip": 1,
+    "worker_pass": 16
+  },
+  "production": {
+    "worker": "remix-duo-license",
+    "version": "ddee1525-2532-4f00-ad6a-e37b403975fb",
+    "previous_version": "b7d745a7-ffaf-48c0-bc1c-9165cd156b9c",
+    "mac_online_activation": "ACTIVE",
+    "mac_offline_verification": "ACTIVE",
+    "qa_license_id": "QA-MAC-V886",
+    "qa_expires_at": 1793766971,
+    "unregistered_mac_status": 403,
+    "unregistered_mac_reason": "MACHINE_NOT_REGISTERED"
+  },
+  "gui": {
+    "pid": 21042,
+    "cwd": "/",
+    "window_created": true,
+    "title": "RemiX Duo 8.86 \u00b7 TRF Offline Alpha",
+    "visual_acceptance": false,
+    "reason": "loginwindow/locked desktop during visual probe; unlock requested",
+    "capture_error": "ScreenCaptureKit -3811 during locked/offscreen GUI probe; no visual PASS"
+  },
+  "installer_desktop": "/Users/dinhtran/Desktop/RemiXDuo-8.86-arm64-QA.dmg"
+}

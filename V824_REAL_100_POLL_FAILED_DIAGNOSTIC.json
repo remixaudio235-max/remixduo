@@ -1,0 +1,29 @@
+{
+  "verified_ok": 100,
+  "polls": 100,
+  "verified_counts": {
+    "108/108": 100
+  },
+  "states": {
+    "pending": 1,
+    "transient": 99
+  },
+  "latency_ms_p95": 6.513500004075468,
+  "latency_ms_max": 1280.4659999965224,
+  "wall_seconds": 8.863679400004912,
+  "active_names": [],
+  "last_gate": {
+    "t": 186476.343,
+    "verified": 108,
+    "rows": 108,
+    "active_count": null,
+    "active_names": [],
+    "pair_candidate": null,
+    "state": "transient",
+    "stable": 0,
+    "reason": "READ ERROR: bad Smaart bounds",
+    "committed_pair": null,
+    "changed": false
+  },
+  "source_note": "Only visible rows are re-read between full scans; other rows use cached initial 108-row proof."
+}

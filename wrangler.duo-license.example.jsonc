@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "remix-duo-license",
+  "account_id": "1ff16b4d9ee7dc1e699b5d93b0890eb6",
+  "main": "cloudflare_duo_license_worker_v876.mjs",
+  "compatibility_date": "2026-10-15",
+  "workers_dev": true,
+  "d1_databases": [
+    {
+      "binding": "LICENSE_DB",
+      "database_name": "remix-duo-license-db",
+      "database_id": "REPLACE_WITH_NEW_D1_DATABASE_ID"
+    }
+  ]
+}

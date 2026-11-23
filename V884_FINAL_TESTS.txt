@@ -1,0 +1,26 @@
+........................................................................ [ 15%]
+.........................................................F.............. [ 30%]
+........................................................................ [ 45%]
+........................................................................ [ 60%]
+........................................................................ [ 75%]
+........................................................................ [ 90%]
+......................................F.....                             [100%]
+================================== FAILURES ===================================
+________ test_fir_saved_fs_change_and_source_bytes_change_fail_closed _________
+test_v845_fir_one_trace.py:128: in test_fir_saved_fs_change_and_source_bytes_change_fail_closed
+    assert fir.result is not None,fir.details.toPlainText()
+E   AssertionError: Trace/Fs/taps thay \u0111\u1ed5i trong khi t\xednh FIR
+E   assert None is not None
+E    +  where None = <signal_tools_gui_v813.FIRDialog object at 0x00000236570730A0>.result
+_________ test_autophase_returns_immediately_and_keeps_gui_heartbeat __________
+test_v884_logic_fixes.py:148: in test_autophase_returns_immediately_and_keeps_gui_heartbeat
+    assert len(beats)>=8
+E   assert 2 >= 8
+E    +  where 2 = len([66847.218, 66847.234])
+---------------------------- Captured stdout call -----------------------------
+V7_PAIR_EVENT ('D:\\REMIX_AUTO_ALIGN_V6_DEV\\windows_v8_84_LOGIC_FIX_QA\\QA_A.trf', 'D:\\REMIX_AUTO_ALIGN_V6_DEV\\windows_v8_84_LOGIC_FIX_QA\\QA_B.trf')
+V7_SUM_RENDER_READY ('QA_A.trf', 'QA_B.trf') 1050
+=========================== short test summary info ===========================
+FAILED test_v845_fir_one_trace.py::test_fir_saved_fs_change_and_source_bytes_change_fail_closed
+FAILED test_v884_logic_fixes.py::test_autophase_returns_immediately_and_keeps_gui_heartbeat
+2 failed, 474 passed in 193.42s (0:03:13)

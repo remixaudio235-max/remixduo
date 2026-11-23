@@ -1,0 +1,167 @@
+FFFFFFFFFFFFFFFFF                                                        [100%]
+================================== FAILURES ===================================
+____ test_flat_fir_stays_transparent_in_band_and_neutral_region[512-44100] ____
+test_v884_logic_fixes.py:21: in test_flat_fir_stays_transparent_in_band_and_neutral_region
+    assert np.max(abs(20*np.log10(abs(h))))<.1
+E   AssertionError: assert 10.917603442043438 < 0.1
+E    +  where 10.917603442043438 = <function max at 0x00000251EF25D870>(array([3.11445299e-04, 2.21494733e-02, 2.42036722e+00, 7.58134623e+00,\n       1.09176034e+01]))
+E    +    where <function max at 0x00000251EF25D870> = np.max
+E    +    and   array([3.11445299e-04, 2.21494733e-02, 2.42036722e+00, 7.58134623e+00,\n       1.09176034e+01]) = abs((20 * array([-1.55722649e-05, -1.10747367e-03, -1.21018361e-01, -3.79067311e-01,\n       -5.45880172e-01])))
+E    +      where array([-1.55722649e-05, -1.10747367e-03, -1.21018361e-01, -3.79067311e-01,\n       -5.45880172e-01]) = <ufunc 'log10'>(array([0.99996414, 0.9974532 , 0.7568009 , 0.41776561, 0.2845246 ]))
+E    +        where <ufunc 'log10'> = np.log10
+E    +        and   array([0.99996414, 0.9974532 , 0.7568009 , 0.41776561, 0.2845246 ]) = abs(array([-0.87819008+0.47823683j,  0.27015069+0.96017263j,\n        0.69737403+0.2939678j , -0.13305277+0.39601145j,\n       -0.06331268-0.27739098j]))
+____ test_flat_fir_stays_transparent_in_band_and_neutral_region[512-48000] ____
+test_v884_logic_fixes.py:21: in test_flat_fir_stays_transparent_in_band_and_neutral_region
+    assert np.max(abs(20*np.log10(abs(h))))<.1
+E   AssertionError: assert 8.343297834164359 < 0.1
+E    +  where 8.343297834164359 = <function max at 0x00000251EF25D870>(array([2.77085120e-04, 1.87081397e-02, 2.01075795e+00, 6.02069096e+00,\n       8.34329783e+00]))
+E    +    where <function max at 0x00000251EF25D870> = np.max
+E    +    and   array([2.77085120e-04, 1.87081397e-02, 2.01075795e+00, 6.02069096e+00,\n       8.34329783e+00]) = abs((20 * array([-1.38542560e-05, -9.35406986e-04, -1.00537898e-01, -3.01034548e-01,\n       -4.17164892e-01])))
+E    +      where array([-1.38542560e-05, -9.35406986e-04, -1.00537898e-01, -3.01034548e-01,\n       -4.17164892e-01]) = <ufunc 'log10'>(array([0.9999681 , 0.99784846, 0.79334502, 0.49999476, 0.38267942]))
+E    +        where <ufunc 'log10'> = np.log10
+E    +        and   array([0.9999681 , 0.99784846, 0.79334502, 0.49999476, 0.38267942]) = abs(array([-0.97945617+0.20149889j, -0.44133709-0.89494309j,\n        0.10355231-0.78655785j,  0.24999738-0.43300816j,\n        0.14644507+0.35354968j]))
+____ test_flat_fir_stays_transparent_in_band_and_neutral_region[512-96000] ____
+test_v884_logic_fixes.py:21: in test_flat_fir_stays_transparent_in_band_and_neutral_region
+    assert np.max(abs(20*np.log10(abs(h))))<.1
+E   AssertionError: assert 1.6031634118884424 < 0.1
+E    +  where 1.6031634118884424 = <function max at 0x00000251EF25D870>(array([1.37555400e-04, 4.74282534e-03, 4.73732342e-01, 1.24947841e+00,\n       1.60316341e+00]))
+E    +    where <function max at 0x00000251EF25D870> = np.max
+E    +    and   array([1.37555400e-04, 4.74282534e-03, 4.73732342e-01, 1.24947841e+00,\n       1.60316341e+00]) = abs((20 * array([-6.87777002e-06, -2.37141267e-04, -2.36866171e-02, -6.24739206e-02,\n       -8.01581706e-02])))
+E    +      where array([-6.87777002e-06, -2.37141267e-04, -2.36866171e-02, -6.24739206e-02,\n       -8.01581706e-02]) = <ufunc 'log10'>(array([0.99998416, 0.99945411, 0.9469202 , 0.86601633, 0.8314609 ]))
+E    +        where <ufunc 'log10'> = np.log10
+E    +        and   array([0.99998416, 0.99945411, 0.9469202 , 0.86601633, 0.8314609 ]) = abs(array([-0.10127174-0.99484288j, -0.52777958+0.84873861j,\n       -0.7119323 +0.62434787j, -0.74999214+0.43300816j,\n        0.69133447+0.46193492j]))
+___ test_flat_fir_stays_transparent_in_band_and_neutral_region[1024-44100] ____
+test_v884_logic_fixes.py:21: in test_flat_fir_stays_transparent_in_band_and_neutral_region
+    assert np.max(abs(20*np.log10(abs(h))))<.1
+E   AssertionError: assert 10.917535113181692 < 0.1
+E    +  where 10.917535113181692 = <function max at 0x00000251EF25D870>(array([2.43116437e-04, 2.20811445e-02, 2.42029889e+00, 7.58127790e+00,\n       1.09175351e+01]))
+E    +    where <function max at 0x00000251EF25D870> = np.max
+E    +    and   array([2.43116437e-04, 2.20811445e-02, 2.42029889e+00, 7.58127790e+00,\n       1.09175351e+01]) = abs((20 * array([-1.21558218e-05, -1.10405722e-03, -1.21014944e-01, -3.79063895e-01,\n       -5.45876756e-01])))
+E    +      where array([-1.21558218e-05, -1.10405722e-03, -1.21014944e-01, -3.79063895e-01,\n       -5.45876756e-01]) = <ufunc 'log10'>(array([0.99997201, 0.99746104, 0.75680685, 0.4177689 , 0.28452684]))
+E    +        where <ufunc 'log10'> = np.log10
+E    +        and   array([0.99997201, 0.99746104, 0.75680685, 0.4177689 , 0.28452684]) = abs(array([ 0.53653336-0.84384594j, -0.81194534+0.57937319j,\n        0.75404325+0.06461725j, -0.36830767+0.19718092j,\n        0.04541045+0.28087972j]))
+___ test_flat_fir_stays_transparent_in_band_and_neutral_region[1024-48000] ____
+test_v884_logic_fixes.py:21: in test_flat_fir_stays_transparent_in_band_and_neutral_region
+    assert np.max(abs(20*np.log10(abs(h))))<.1
+E   AssertionError: assert 8.343229505302643 < 0.1
+E    +  where 8.343229505302643 = <function max at 0x00000251EF25D870>(array([2.08756258e-04, 1.86398109e-02, 2.01068962e+00, 6.02062263e+00,\n       8.34322951e+00]))
+E    +    where <function max at 0x00000251EF25D870> = np.max
+E    +    and   array([2.08756258e-04, 1.86398109e-02, 2.01068962e+00, 6.02062263e+00,\n       8.34322951e+00]) = abs((20 * array([-1.04378129e-05, -9.31990543e-04, -1.00534481e-01, -3.01031132e-01,\n       -4.17161475e-01])))
+E    +      where array([-1.04378129e-05, -9.31990543e-04, -1.00534481e-01, -3.01031132e-01,\n       -4.17161475e-01]) = <ufunc 'log10'>(array([0.99997597, 0.99785631, 0.79335127, 0.49999869, 0.38268243]))
+E    +        where <ufunc 'log10'> = np.log10
+E    +        and   array([0.99997597, 0.99785631, 0.79335127, 0.49999869, 0.38268243]) = abs(array([ 0.91616594-4.00739202e-01j, -0.55437926+8.29687202e-01j,\n       -0.732961  +3.03602385e-01j, -0.49999869-5.26936925e-14j,\n        0.14644623+3.53552466e-01j]))
+___ test_flat_fir_stays_transparent_in_band_and_neutral_region[1024-96000] ____
+test_v884_logic_fixes.py:21: in test_flat_fir_stays_transparent_in_band_and_neutral_region
+    assert np.max(abs(20*np.log10(abs(h))))<.1
+E   AssertionError: assert 1.6030950830266097 < 0.1
+E    +  where 1.6030950830266097 = <function max at 0x00000251EF25D870>(array([6.92265385e-05, 4.67449648e-03, 4.73664013e-01, 1.24941008e+00,\n       1.60309508e+00]))
+E    +    where <function max at 0x00000251EF25D870> = np.max
+E    +    and   array([6.92265385e-05, 4.67449648e-03, 4.73664013e-01, 1.24941008e+00,\n       1.60309508e+00]) = abs((20 * array([-3.46132692e-06, -2.33724824e-04, -2.36832007e-02, -6.24705042e-02,\n       -8.01547542e-02])))
+E    +      where array([-3.46132692e-06, -2.33724824e-04, -2.36832007e-02, -6.24705042e-02,\n       -8.01547542e-02]) = <ufunc 'log10'>(array([0.99999203, 0.99946197, 0.94692765, 0.86602314, 0.83146744]))
+E    +        where <ufunc 'log10'> = np.log10
+E    +        and   array([0.99999203, 0.99946197, 0.94692765, 0.86602314, 0.83146744]) = abs(array([-9.78814950e-01+0.20470797j, -4.71143113e-01-0.88144677j,\n       -1.84736421e-01-0.9287327j ,  5.85365088e-14-0.86602314j,\n        6.91339908e-01+0.46193856j]))
+___ test_flat_fir_stays_transparent_in_band_and_neutral_region[4096-44100] ____
+test_v884_logic_fixes.py:21: in test_flat_fir_stays_transparent_in_band_and_neutral_region
+    assert np.max(abs(20*np.log10(abs(h))))<.1
+E   AssertionError: assert 10.917513813948247 < 0.1
+E    +  where 10.917513813948247 = <function max at 0x00000251EF25D870>(array([2.21817203e-04, 2.20598452e-02, 2.42027759e+00, 7.58125660e+00,\n       1.09175138e+01]))
+E    +    where <function max at 0x00000251EF25D870> = np.max
+E    +    and   array([2.21817203e-04, 2.20598452e-02, 2.42027759e+00, 7.58125660e+00,\n       1.09175138e+01]) = abs((20 * array([-1.10908602e-05, -1.10299226e-03, -1.21013879e-01, -3.79062830e-01,\n       -5.45875691e-01])))
+E    +      where array([-1.10908602e-05, -1.10299226e-03, -1.21013879e-01, -3.79062830e-01,\n       -5.45875691e-01]) = <ufunc 'log10'>(array([0.99997446, 0.99746349, 0.75680871, 0.41776992, 0.28452754]))
+E    +        where <ufunc 'log10'> = np.log10
+E    +        and   array([0.99997446, 0.99746349, 0.75680871, 0.41776992, 0.28452754]) = abs(array([-0.62347388+0.78181152j, -0.89868355-0.43278319j,\n       -0.16840578-0.73783393j,  0.26047529+0.32662568j,\n       -0.06331333+0.27739384j]))
+___ test_flat_fir_stays_transparent_in_band_and_neutral_region[4096-48000] ____
+test_v884_logic_fixes.py:21: in test_flat_fir_stays_transparent_in_band_and_neutral_region
+    assert np.max(abs(20*np.log10(abs(h))))<.1
+E   AssertionError: assert 8.34320820606936 < 0.1
+E    +  where 8.34320820606936 = <function max at 0x00000251EF25D870>(array([1.87457025e-04, 1.86185116e-02, 2.01066833e+00, 6.02060133e+00,\n       8.34320821e+00]))
+E    +    where <function max at 0x00000251EF25D870> = np.max
+E    +    and   array([1.87457025e-04, 1.86185116e-02, 2.01066833e+00, 6.02060133e+00,\n       8.34320821e+00]) = abs((20 * array([-9.37285125e-06, -9.30925581e-04, -1.00533416e-01, -3.01030067e-01,\n       -4.17160410e-01])))
+E    +      where array([-9.37285125e-06, -9.30925581e-04, -1.00533416e-01, -3.01030067e-01,\n       -4.17160410e-01]) = <ufunc 'log10'>(array([0.99997842, 0.99785876, 0.79335321, 0.49999992, 0.38268337]))
+E    +        where <ufunc 'log10'> = np.log10
+E    +        and   array([0.99997842, 0.99785876, 0.79335321, 0.49999992, 0.38268337]) = abs(array([-0.09801502-9.95163249e-01j, -0.55438062+8.29689237e-01j,\n       -0.73296279+3.03603130e-01j, -0.49999992-2.11478275e-13j,\n        0.14644659+3.53553333e-01j]))
+___ test_flat_fir_stays_transparent_in_band_and_neutral_region[4096-96000] ____
+test_v884_logic_fixes.py:21: in test_flat_fir_stays_transparent_in_band_and_neutral_region
+    assert np.max(abs(20*np.log10(abs(h))))<.1
+E   AssertionError: assert 1.603073783792763 < 0.1
+E    +  where 1.603073783792763 = <function max at 0x00000251EF25D870>(array([4.79273044e-05, 4.65319724e-03, 4.73642714e-01, 1.24938878e+00,\n       1.60307378e+00]))
+E    +    where <function max at 0x00000251EF25D870> = np.max
+E    +    and   array([4.79273044e-05, 4.65319724e-03, 4.73642714e-01, 1.24938878e+00,\n       1.60307378e+00]) = abs((20 * array([-2.39636522e-06, -2.32659862e-04, -2.36821357e-02, -6.24694392e-02,\n       -8.01536892e-02])))
+E    +      where array([-2.39636522e-06, -2.32659862e-04, -2.36821357e-02, -6.24694392e-02,\n       -8.01536892e-02]) = <ufunc 'log10'>(array([0.99999448, 0.99946442, 0.94692997, 0.86602526, 0.83146948]))
+E    +        where <ufunc 'log10'> = np.log10
+E    +        and   array([0.99999448, 0.99946442, 0.94692997, 0.86602526, 0.83146948]) = abs(array([ 6.71555249e-01-0.74094704j, -4.71144268e-01-0.88144893j,\n       -1.84736874e-01-0.92873498j,  2.42611486e-13-0.86602526j,\n        6.91341603e-01+0.46193969j]))
+____________ test_suite9_fs_uses_redirected_config_not_stale_home _____________
+test_v884_logic_fixes.py:34: in test_suite9_fs_uses_redirected_config_not_stale_home
+    assert fs.read_saved_smaart_fs().hz==96000
+E   AssertionError: assert 48000 == 96000
+E    +  where 48000 = SavedSmaartFs(hz=48000, modified_ns=1793668696201601500, size=313, source='SmaartConfig.xml (saved)').hz
+E    +    where SavedSmaartFs(hz=48000, modified_ns=1793668696201601500, size=313, source='SmaartConfig.xml (saved)') = <function read_saved_smaart_fs at 0x000002518E8C5EE0>()
+E    +      where <function read_saved_smaart_fs at 0x000002518E8C5EE0> = <module 'smaart_fs_sync_v841' from 'D:\\REMIX_AUTO_ALIGN_V6_DEV\\windows_v8_84_LOGIC_FIX_QA\\smaart_fs_sync_v841.py'>.read_saved_smaart_fs
+________________ test_unknown_edition_cannot_borrow_suite9_fs _________________
+test_v884_logic_fixes.py:43: in test_unknown_edition_cannot_borrow_suite9_fs
+    assert fs.read_saved_smaart_fs() is None
+E   AssertionError: assert SavedSmaartFs(hz=48000, modified_ns=1793668696220472200, size=313, source='SmaartConfig.xml (saved)') is None
+E    +  where SavedSmaartFs(hz=48000, modified_ns=1793668696220472200, size=313, source='SmaartConfig.xml (saved)') = <function read_saved_smaart_fs at 0x000002518E8C5EE0>()
+E    +    where <function read_saved_smaart_fs at 0x000002518E8C5EE0> = <module 'smaart_fs_sync_v841' from 'D:\\REMIX_AUTO_ALIGN_V6_DEV\\windows_v8_84_LOGIC_FIX_QA\\smaart_fs_sync_v841.py'>.read_saved_smaart_fs
+_____ test_unseen_selected_row_cannot_be_reauthorized_and_visible_rearms ______
+test_v884_logic_fixes.py:69: in test_unseen_selected_row_cannot_be_reauthorized_and_visible_rearms
+    assert obs.current_single() is None
+E   AssertionError: assert ('C:\\Users\\Admin\\AppData\\Local\\Temp\\pytest-of-Admin\\pytest-473\\test_unseen_selected_row_canno0\\0.trf', 1793668696230986600, 0, 1) is None
+E    +  where ('C:\\Users\\Admin\\AppData\\Local\\Temp\\pytest-of-Admin\\pytest-473\\test_unseen_selected_row_canno0\\0.trf', 1793668696230986600, 0, 1) = current_single()
+E    +    where current_single = <live_sync_v7.LiveDataBarV7 object at 0x00000251900B90D0>.current_single
+______________ test_pair_is_hidden_if_one_active_row_leaves_view ______________
+test_v884_logic_fixes.py:81: in test_pair_is_hidden_if_one_active_row_leaves_view
+    assert result.pair is None
+E   AssertionError: assert ('C:\\Users\\Admin\\AppData\\Local\\Temp\\pytest-of-Admin\\pytest-473\\test_pair_is_hidden_if_one_act0\\0.trf', 'C:\\Users\\Admin\\AppData\\Local\\Temp\\pytest-of-Admin\\pytest-473\\test_pair_is_hidden_if_one_act0\\1.trf') is None
+E    +  where ('C:\\Users\\Admin\\AppData\\Local\\Temp\\pytest-of-Admin\\pytest-473\\test_pair_is_hidden_if_one_act0\\0.trf', 'C:\\Users\\Admin\\AppData\\Local\\Temp\\pytest-of-Admin\\pytest-473\\test_pair_is_hidden_if_one_act0\\1.trf') = SyncResult(pair=('C:\\Users\\Admin\\AppData\\Local\\Temp\\pytest-of-Admin\\pytest-473\\test_pair_is_hidden_if_one_act0...Users\\Admin\\AppData\\Local\\Temp\\pytest-of-Admin\\pytest-473\\test_pair_is_hidden_if_one_act0\\1.trf'), ambiguous=0).pair
+________ test_different_grids_preserve_pure_delay_amplitude_and_phase _________
+test_v884_logic_fixes.py:91: in test_different_grids_preserve_pure_delay_amplitude_and_phase
+    assert abs(abs(hb[i])-1)<1e-10
+E   assert 0.17817553049936818 < 1e-10
+E    +  where 0.17817553049936818 = abs((0.8218244695006318 - 1))
+E    +    where 0.8218244695006318 = abs((0.6753954586699943-0.468226903411095j))
+_________ test_underresolved_phase_segment_does_not_invent_middle_bin _________
+test_v884_logic_fixes.py:99: in test_underresolved_phase_segment_does_not_invent_middle_bin
+    assert 105 not in f
+E   assert 105 not in array([100., 105., 110.])
+_____________ test_fir_content_has_no_overlap_and_fits_its_layout _____________
+test_v884_logic_fixes.py:109: in test_fir_content_has_no_overlap_and_fits_its_layout
+    assert not fir.details.geometry().intersects(fir.dsp_profile.geometry())
+E   assert not True
+E    +  where True = <built-in method intersects of QRect object at 0x00000251900CB1B0>(PyQt6.QtCore.QRect(6, 500, 193, 29))
+E    +    where <built-in method intersects of QRect object at 0x00000251900CB1B0> = PyQt6.QtCore.QRect(6, 463, 193, 86).intersects
+E    +      where PyQt6.QtCore.QRect(6, 463, 193, 86) = <built-in method geometry of QTextEdit object at 0x00000251900F6200>()
+E    +        where <built-in method geometry of QTextEdit object at 0x00000251900F6200> = <PyQt6.QtWidgets.QTextEdit object at 0x00000251900F6200>.geometry
+E    +          where <PyQt6.QtWidgets.QTextEdit object at 0x00000251900F6200> = <signal_tools_gui_v813.FIRDialog object at 0x00000251900F5AB0>.details
+E    +    and   PyQt6.QtCore.QRect(6, 500, 193, 29) = <built-in method geometry of QComboBox object at 0x00000251900F6CB0>()
+E    +      where <built-in method geometry of QComboBox object at 0x00000251900F6CB0> = <PyQt6.QtWidgets.QComboBox object at 0x00000251900F6CB0>.geometry
+E    +        where <PyQt6.QtWidgets.QComboBox object at 0x00000251900F6CB0> = <signal_tools_gui_v813.FIRDialog object at 0x00000251900F5AB0>.dsp_profile
+_________ test_autophase_returns_immediately_and_keeps_gui_heartbeat __________
+test_v884_logic_fixes.py:126: in test_autophase_returns_immediately_and_keeps_gui_heartbeat
+    assert time.monotonic()-start<.1, 'Solver blocked GUI button slot'
+E   AssertionError: Solver blocked GUI button slot
+E   assert (65967.062 - 65966.812) < 0.1
+E    +  where 65967.062 = <built-in function monotonic>()
+E    +    where <built-in function monotonic> = time.monotonic
+---------------------------- Captured stdout call -----------------------------
+V7_PAIR_EVENT ('D:\\REMIX_AUTO_ALIGN_V6_DEV\\windows_v8_84_LOGIC_FIX_QA\\QA_A.trf', 'D:\\REMIX_AUTO_ALIGN_V6_DEV\\windows_v8_84_LOGIC_FIX_QA\\QA_B.trf')
+V7_SUM_RENDER_READY ('QA_A.trf', 'QA_B.trf') 1050
+=========================== short test summary info ===========================
+FAILED test_v884_logic_fixes.py::test_flat_fir_stays_transparent_in_band_and_neutral_region[512-44100]
+FAILED test_v884_logic_fixes.py::test_flat_fir_stays_transparent_in_band_and_neutral_region[512-48000]
+FAILED test_v884_logic_fixes.py::test_flat_fir_stays_transparent_in_band_and_neutral_region[512-96000]
+FAILED test_v884_logic_fixes.py::test_flat_fir_stays_transparent_in_band_and_neutral_region[1024-44100]
+FAILED test_v884_logic_fixes.py::test_flat_fir_stays_transparent_in_band_and_neutral_region[1024-48000]
+FAILED test_v884_logic_fixes.py::test_flat_fir_stays_transparent_in_band_and_neutral_region[1024-96000]
+FAILED test_v884_logic_fixes.py::test_flat_fir_stays_transparent_in_band_and_neutral_region[4096-44100]
+FAILED test_v884_logic_fixes.py::test_flat_fir_stays_transparent_in_band_and_neutral_region[4096-48000]
+FAILED test_v884_logic_fixes.py::test_flat_fir_stays_transparent_in_band_and_neutral_region[4096-96000]
+FAILED test_v884_logic_fixes.py::test_suite9_fs_uses_redirected_config_not_stale_home
+FAILED test_v884_logic_fixes.py::test_unknown_edition_cannot_borrow_suite9_fs
+FAILED test_v884_logic_fixes.py::test_unseen_selected_row_cannot_be_reauthorized_and_visible_rearms
+FAILED test_v884_logic_fixes.py::test_pair_is_hidden_if_one_active_row_leaves_view
+FAILED test_v884_logic_fixes.py::test_different_grids_preserve_pure_delay_amplitude_and_phase
+FAILED test_v884_logic_fixes.py::test_underresolved_phase_segment_does_not_invent_middle_bin
+FAILED test_v884_logic_fixes.py::test_fir_content_has_no_overlap_and_fits_its_layout
+FAILED test_v884_logic_fixes.py::test_autophase_returns_immediately_and_keeps_gui_heartbeat
+17 failed in 3.26s

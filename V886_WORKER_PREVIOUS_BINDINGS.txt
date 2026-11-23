@@ -1,0 +1,21 @@
+
+ ⛅️ wrangler 4.156.1 (update available 4.156.2)
+───────────────────────────────────────────────
+Version ID:  b7d745a7-ffaf-48c0-bc1c-9165cd156b9c
+Created:     2026-11-02T14:52:51.366Z
+Author:      remixaudio235@gmail.com
+Source:      Unknown (version_upload)
+Tag:         -
+Message:     -
+
+Handlers:            fetch
+Compatibility Date:  2026-11-02
+Secrets:
+Secret Name:  ADMIN_TOKEN
+Secret Name:  DUO_ADMIN_TOKEN
+Secret Name:  ED25519_PRIVATE_SEED_B64
+Your Worker has access to the following bindings:
+Binding                                                            Resource
+env.DB (35483acd-5262-4950-b02a-8b37eb739b98)                      D1 Database
+env.PUBLIC_APP_NAME ("RemiX Duo License Admin")                    Environment Variable
+env.PUBLIC_APP_VERSION ("8.77")                                    Environment Variable

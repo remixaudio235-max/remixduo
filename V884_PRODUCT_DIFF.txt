@@ -1,0 +1,460 @@
+--- baseline/signal_tools_core_v813.py
++++ V884/signal_tools_core_v813.py
+@@ -166,14 +166,16 @@
+     gain_db*=weight
+     gain_db[0]=0
+     gain=np.power(10.,gain_db/20.)
+-    # Convert real positive magnitude inverse spectrum to zero-phase IR
+-    # then centered symmetric truncated linear-phase FIR, Kaiser window.
+-    pulse=np.fft.fftshift(np.fft.irfft(gain,nfft))
+-    mid=nfft//2
+-    start=mid-taps//2
+-    kernel=pulse[start:start+taps].copy()
++    # Center the desired response at the half-sample delay of an even FIR.
++    # Averaging an integer-centered impulse with its reverse would instead
++    # multiply EVERY design by cos(pi*f/fs), cutting a flat input by 6dB/16k.
++    delay=(taps-1)/(2*fs)
++    spectrum=gain*np.exp(-2j*np.pi*freq*delay)
++    # An even symmetric (Type II) FIR necessarily has zero at Nyquist.
++    spectrum[-1]=0.
++    kernel=np.fft.irfft(spectrum,nfft)[:taps].copy()
+     kernel*=np.kaiser(taps,6)
+-    # Enforce exact symmetry (even-length FIR has half-sample group delay).
++    # Remove numerical roundoff only; centering was already done spectrally.
+     kernel=.5*(kernel+kernel[::-1])
+     response=np.fft.rfft(kernel,nfft)
+     actual_db=20*np.log10(np.maximum(np.abs(response),1e-12))
+--- baseline/trf_core.py
++++ V884/trf_core.py
+@@ -80,11 +80,21 @@
+     exact=(j<len(b.hz))&(np.abs(b.hz[safe]-f)<0.002)
+     valid=(exact|((j>0)&(j<len(b.hz))&(b.hz[safe]/np.maximum(b.hz[lo],1e-9)<1.25)))
+     valid &= (f>=b.hz[0])&(f<=b.hz[-1])
++    # Interpolate magnitude and a resolved phase, not a chord through the
++    # complex plane (which attenuates even a constant-amplitude pure delay).
++    magnitude=np.abs(b.h)
++    phase=np.unwrap(np.angle(b.h))
++    resolved=((magnitude[lo]>1e-12)&(magnitude[safe]>1e-12)&
++              (np.abs(phase[safe]-phase[lo])<.9*np.pi))
++    valid &= exact|resolved
+     ii=np.flatnonzero(valid)
+     if len(ii)<1:raise TraceError("no matching frequencies")
+     f=f[ii]; j=safe[ii]; k=lo[ii]; eq=exact[ii]
+     alpha=(f-b.hz[k])/np.maximum(b.hz[j]-b.hz[k],1e-12)
+-    h2=np.where(eq,b.h[j],b.h[k]+(b.h[j]-b.h[k])*alpha)
++    logmag=np.log(np.maximum(magnitude,1e-300))
++    interpolated=np.exp(logmag[k]+(logmag[j]-logmag[k])*alpha+
++                        1j*(phase[k]+(phase[j]-phase[k])*alpha))
++    h2=np.where(eq,b.h[j],interpolated)
+     c2=np.where(eq,b.coherence[j],b.coherence[k]+(b.coherence[j]-b.coherence[k])*alpha)
+     return f,a.h[ii],h2,np.minimum(a.coherence[ii],c2)
+ 
+--- baseline/live_sync_v7.py
++++ V884/live_sync_v7.py
+@@ -31,6 +31,7 @@
+         self.order=[]
+         self.uia_rows={}
+         self.states={}
++        self.row_seen_at={}
+         self.header=None
+         self.layout=None
+         self.signature=None
+@@ -60,6 +61,7 @@
+         self.order=[]
+         self.uia_rows={}
+         self.states={}
++        self.row_seen_at={}
+         self.header=None
+         self.layout=None
+         self.signature=None
+@@ -87,12 +89,18 @@
+         self.single_verified_at=0.
+         self.single_scan_at=0.
+ 
+-    def observe_single(self,when):
++    def observe_single(self,when,observed=None):
+         """Record one *verified* full Data Bar state; commit only at stable 3/3.
+ 
+         Same full scan/visible-page PrintWindow reader as AutoPhase.
+         An invalid viewport never advances this counter.
+         """
++        # None means an explicitly complete observation (initial full scan
++        # or a synthetic full-scan test). Poll must pass its visible indices.
++        for index in self.states if observed is None else observed:
++            if self.states.get(index) in ('on','off'):
++                self.row_seen_at[index]=when
++            else:self.row_seen_at.pop(index,None)
+         if (not self.ready or len(self.order)==0 or
+             len(self.states)!=len(self.order) or
+             any(v not in ("on","off") for v in self.states.values())):
+@@ -104,6 +112,10 @@
+         enabled=[i for i in range(len(self.order)) if self.states.get(i)=="on"]
+         if len(enabled)!=1:
+             self.invalidate_single(clear_scan=False)
++            return
++        if (enabled[0] not in self.row_seen_at or
++                not 0<=when-self.row_seen_at[enabled[0]]<=1.5):
++            self.invalidate_single()
+             return
+         path=self.order[enabled[0]]
+         try:
+@@ -133,6 +145,7 @@
+                 any(state not in ('on','off') for state in self.states.values()) or
+                 len(enabled)!=1 or not 0<=enabled[0]<len(self.order) or
+                 self.single_tick is None or
++                not 0<=time.perf_counter()-self.row_seen_at.get(enabled[0],-1e30)<=1.5 or
+                 str(self.order[enabled[0]])!=self.single_tick[0]):
+             return None
+         return self.single_tick
+@@ -157,6 +170,7 @@
+         self.imports_count=len(fresh_unindexed_imports(self.folder))
+         self.uia_rows=rows
+         self.states=dict(enumerate(scan.states))
++        self.row_seen_at={i:time.perf_counter() for i in self.states}
+         self.header=(bar,anchor,br.top-t,br.bottom-t,icon_left)
+         self.layout=(r-l,b-t)
+         self.signature=self._sig()
+@@ -177,6 +191,13 @@
+             active,ambiguous)
+ 
+     def _pair(self):
++        if (not self.ready or len(self.states)!=len(self.order) or
++                any(v not in ('on','off') for v in self.states.values())):
++            return None
++        now=time.perf_counter()
++        if any(not 0<=now-self.row_seen_at.get(i,-1e30)<=1.5
++               for i,state in self.states.items() if state=='on'):
++            return None
+         on=[str(self.order[i]) for i in range(len(self.order))
+             if self.states.get(i)=="on"]
+         return tuple(on) if len(on)==2 else None
+@@ -230,6 +251,15 @@
+                 self.last_pair=None
+                 return SyncResult(None,"No unambiguous rows in viewport",
+                                   0,len(self.order),True,now)
++            # A cached checked row which is no longer in this capture is NOT
++            # a fresh tick witness. Mark it unknown, never renew it through
++            # repeated captures of unrelated rows. Returning to view can
++            # resolve it on/off again; no automatic live scrolling is added.
++            hidden_active=[i for i,state in self.states.items()
++                           if state=='on' and i not in rows]
++            for index in hidden_active:
++                self.states[index]='unknown'
++                self.row_seen_at.pop(index,None)
+             if any(state not in ('on','off') for state in rows.values()):
+                 for index,state in rows.items():
+                     self.states[index]=state
+@@ -237,17 +267,17 @@
+                 self.last_pair=None
+                 return SyncResult(None,"Visible tick ambiguous — keep checked rows visible and retry",
+                                   0,len(self.order),True,now,(),1)
+-            changed=False
++            changed=bool(hidden_active)
+             for i,state in rows.items():
+                 old=self.states.get(i)
+                 if old!=state:
+                     self.states[i]=state
+                     changed=True
+             self.poll_count+=1
++            self.observe_single(now,observed=rows)
+             pair=self._pair() if len(self.states)==len(self.order) else None
+             if pair!=self.last_pair:changed=True
+             self.last_pair=pair
+-            self.observe_single(now)
+             self.last_pos=offset1
+             text=(f"Verified viewport {len(rows)} rows; "
+                   f"cached {len(self.states)}/{len(self.order)} rows, "
+@@ -257,6 +287,8 @@
+             active=tuple(str(self.order[i]) for i in range(len(self.order))
+                          if self.states.get(i)=="on")
+             ambiguous=sum(v not in ("on","off") for v in self.states.values())
++            if ambiguous:
++                text="Tick chưa xác minh: giữ mọi Trace được tick trong vùng nhìn thấy. "+text
+             return SyncResult(pair,text,len(self.states),len(self.order),
+                               changed,now,active,ambiguous)
+         except Exception as exc:
+--- baseline/smaart_fs_sync_v841.py
++++ V884/smaart_fs_sync_v841.py
+@@ -24,7 +24,9 @@
+     if path is None:
+         from smaart_runtime_paths_v868 import running_major,saved_config
+         version=running_major()
+-        config=saved_config(8) if version==8 else CONFIG
++        if version not in (8,9):return None
++        config=saved_config(version)
++        if config is None:return None
+     else:
+         config=Path(path)
+     try:
+@@ -49,6 +51,6 @@
+         last=config.stat()
+         if (first.st_mtime_ns,first.st_size)!=(last.st_mtime_ns,last.st_size):
+             return None
+-        return SavedSmaartFs(rate,last.st_mtime_ns,last.st_size)
++        return SavedSmaartFs(rate,last.st_mtime_ns,last.st_size,str(config.resolve()))
+     except (OSError,ValueError,ET.ParseError):
+         return None
+--- baseline/overlay_v7.py
++++ V884/overlay_v7.py
+@@ -6,6 +6,8 @@
+ """
+ from __future__ import annotations
+ import argparse,concurrent.futures,sys,time,os
++from dataclasses import replace
++from PyQt6 import sip
+ from types import SimpleNamespace
+ from pathlib import Path
+ import numpy as np
+@@ -48,6 +50,7 @@
+     axis_snapshot=pyqtSignal(object)
+     pan_snapshot=pyqtSignal(object)
+     mag_anchor_ready=pyqtSignal(object)
++    aligned=pyqtSignal(int,object,object)
+ 
+ class SumGraph(QWidget):
+     def __init__(self,kind):
+@@ -986,6 +989,12 @@
+         self.events=Events()
+         self.events.loaded.connect(self.loaded)
+         self.events.found.connect(self.found)
++        self.events.aligned.connect(self._finish_alignment)
++        self._align_pool=concurrent.futures.ThreadPoolExecutor(
++            max_workers=1,thread_name_prefix="remix_autophase")
++        self._align_future=None
++        self._align_ticket=0
++        self._align_closed=False
+         self.pool=concurrent.futures.ThreadPoolExecutor(max_workers=2)
+         # Dedicated worker avoids stalling Qt/AutoAlign while native
+         # PrintWindow + multi-region correlation is running.
+@@ -1398,6 +1407,8 @@
+         return True
+ 
+     def align(self):
++        if self._align_closed or self._align_future is not None:
++            return  # one running request, no unbounded worker queue
+         if not self._selection_verified:
+             self.status.setText("Chưa xác minh ổn định 2 Trace được tick")
+             return
+@@ -1410,10 +1421,68 @@
+         # Use ORIGINAL trace order for solver, never reference-swapped order.
+         a,b=self.current_traces
+         key=self._candidate_key()
+-        results=auto_align(a,b,lf=self.lf.value(),hf=self.hf.value(),
+-                           max_delay_ms=180)
+-        if not self.controller.is_current(gen,pair) or key!=self._candidate_key():
++        try:
++            signatures=self._alignment_files()
++        except OSError:
++            self.status.setText("Trace thay đổi hoặc không còn đọc được; xác minh lại tick")
++            return
++        copies=[]
++        for trace in (a,b):
++            arrays=[np.array(x,copy=True) for x in (trace.hz,trace.h,trace.coherence)]
++            for array in arrays:array.setflags(write=False)
++            copies.append(replace(trace,hz=arrays[0],h=arrays[1],coherence=arrays[2]))
++        self._align_ticket+=1
++        ticket=self._align_ticket
++        context=(gen,pair,key,signatures)
++        self._clear_candidate_buttons()
++        self.last_solve=None
++        self.solve.setEnabled(False)
++        self.solve.setText("ĐANG TÍNH…")
++        self.status.setText("Auto Phase đang tính trên worker; không ghi DSP")
++        future=self._align_pool.submit(auto_align,*copies,
++            lf=self.lf.value(),hf=self.hf.value(),max_delay_ms=180)
++        self._align_future=future
++        def finished(done):
++            if not self._align_closed and not sip.isdeleted(self.events):
++                self.events.aligned.emit(ticket,context,done)
++        future.add_done_callback(finished)
++
++    def _alignment_files(self):
++        if self.demo:return ()
++        signatures=[]
++        for trace in self.current_traces or ():
++            stat=trace.path.stat()
++            if stat.st_mtime_ns!=trace.file_mtime_ns:
++                raise OSError("TRF changed since it was loaded")
++            signatures.append((str(trace.path),stat.st_mtime_ns,stat.st_size))
++        return tuple(signatures)
++
++    def _finish_alignment(self,ticket,context,future):
++        if self._align_closed or ticket!=self._align_ticket:return
++        self._align_future=None
++        self.solve.setText("AUTO PHASE")
++        self.solve.setEnabled(bool(self._selection_verified and self.current_traces))
++        gen,pair,key,signatures=context
++        valid=(self._selection_verified and self.controller.is_current(gen,pair)
++               and key==self._candidate_key())
++        if valid and not self.demo:
++            valid=(self.observer.ready and self.observer.last_pair==pair and
++                   self.observer._pair()==pair)
++        if valid and self.managed_mode:
++            valid=(self.overlay_workspace_visible and self.overlay_tool_mode=="phase")
++        try:
++            valid=valid and signatures==self._alignment_files()
++        except OSError:
++            valid=False
++        if not valid:
+             self._clear_candidate_buttons()
++            self.status.setText("Bỏ kết quả Auto Phase cũ: Trace, tick hoặc ROI đã đổi")
++            return
++        try:
++            results=future.result()
++        except Exception as exc:
++            self._clear_candidate_buttons()
++            self.status.setText("Auto Phase không tính được: "+str(exc)[:160])
+             return
+         self.last_solve=results
+         self._candidate_scope=key
+@@ -1430,7 +1499,7 @@
+         # count = only section title + slim warning message.
+         self.trace_card.setFixedHeight(138 if valid else 70)
+         self._selection_verified=bool(valid)
+-        self.solve.setEnabled(bool(valid and self.current_traces))
++        self.solve.setEnabled(bool(valid and self.current_traces and self._align_future is None))
+         self.candidate_card.setVisible(bool(valid))
+         for widget in (*self.trace_name_labels,*self.trace_compact_result):
+             widget.setVisible(bool(valid))
+@@ -2383,6 +2452,10 @@
+             self.hide()
+             event.ignore()
+             return
++        self._align_closed=True
++        self.timer.stop()
++        self._align_ticket+=1
++        self._align_pool.shutdown(wait=False,cancel_futures=True)
+         # Close native full-height line hit strips and legacy labels.
+         for grip in (*self.roi_line_grips.values(),
+                      *self.mag_roi_line_grips.values(),
+@@ -2423,7 +2496,7 @@
+     a=parser.parse_args()
+     app=QApplication(sys.argv)
+     if getattr(sys, "_remix_duo_qa_signed_build", False):
+-        app.setApplicationName("RemiX Duo QA V8.77")
++        app.setApplicationName("RemiX Duo QA V8.84")
+     # V8.74: product-scoped Ed25519 license gate, BEFORE any Smaart/GUI IO.
+     # No demo bypass: all application entrypoints require a signed DUO_PRO key.
+     # Cloudflare is mandatory for the commercial frozen EXE. Developer
+--- baseline/signal_tools_gui_v813.py
++++ V884/signal_tools_gui_v813.py
+@@ -25,7 +25,7 @@
+ from autoeq_export_dialog_v08 import EQExportSnapshot,EQExportDialog
+ from win_databar_v7 import locate_smaart
+ from dock_geometry_v815 import read_smaart_anchors,compute_dock_rects
+-from remix_layout_v856 import style_dock,style_active_heading
++from remix_layout_v856 import style_dock,style_active_heading,fit_fir_content
+ from concurrent.futures import ThreadPoolExecutor
+ import time
+ 
+@@ -192,6 +192,18 @@
+         self.summary.setText("Chưa thể tính: " + str(exc))
+         self.details.setPlainText(str(exc))
+         show_notice(self, str(exc))
++    def _saved_fs(self):
++        # Bind Fs to the observer's actual source window when both editions
++        # are running. Never select a config merely from global process order.
++        hwnd=getattr(getattr(self.engine,'observer',None),'hwnd',0)
++        if hwnd:
++            from smaart8_api3_readonly_v868 import process_smaart_major
++            from smaart_runtime_paths_v868 import saved_config
++            edition=process_smaart_major(hwnd)
++            if edition not in (8,9):return None
++            path=saved_config(edition)
++            return read_saved_smaart_fs(path) if path is not None else None
++        return read_saved_smaart_fs()
+     def after_open(self):
+         self.refresh_sources()
+         self.show()
+@@ -432,7 +444,7 @@
+         if not force and now-self._fs_checked_at<1.0:
+             return
+         self._fs_checked_at=now
+-        snap=read_saved_smaart_fs()
++        snap=self._saved_fs()
+         if snap==self._fs_snapshot:
+             return
+         # A saved Fs change makes every existing EQ result invalid.
+@@ -490,7 +502,7 @@
+         from native_eq_mag_v06 import frame_is_fresh_for_window
+         if not frame_is_fresh_for_window(frame,frame.hwnd):
+             return False
+-        if not self._fs_snapshot or self._fs_snapshot!=read_saved_smaart_fs():
++        if not self._fs_snapshot or self._fs_snapshot!=self._saved_fs():
+             return False
+         try:
+             path=Path(token[0])
+@@ -511,7 +523,7 @@
+ 
+     def _parameters(self):
+         self._refresh_fs(force=True)
+-        snap=read_saved_smaart_fs()
++        snap=self._saved_fs()
+         if snap is None or snap!=self._fs_snapshot or snap.hz!=self.fs.currentData():
+             raise ValueError("Không xác minh được Fs đã lưu của Smaart; không tính Auto EQ")
+         self._fs_token=snap
+@@ -567,7 +579,7 @@
+                                    (self.engine.current_traces or ())) or
+                 self.source.currentData()!=pending[1] or
+                 self._verified_single()!=pending[7] or
+-                read_saved_smaart_fs()!=pending[8] or
++                self._saved_fs()!=pending[8] or
+                 not self._pending_sha_ok(pending)):
+             self.native_clear.emit()
+             self.summary.setText("Trace hoặc Fs Smaart đã thay đổi: bỏ Auto EQ cũ")
+@@ -795,7 +807,7 @@
+         if getattr(self,"_manual_token",None) is not None:
+             from smaart_runtime_paths_v868 import saved_config
+             return read_saved_smaart_fs(saved_config(8))
+-        return read_saved_smaart_fs()
++        return self._saved_fs()
+ 
+     def choose_offline_trf(self):
+         from smaart_runtime_paths_v868 import trace_directory
+@@ -1245,6 +1257,8 @@
+                               "fir":"FIR"}[mode])
+         style_active_heading(self,mode)
+         widget=self.pages[mode]
++        if mode=="fir":
++            self.page_heights[mode]=fit_fir_content(widget)
+         self.stack.setFixedHeight(self.page_heights[mode])
+         self.stack.setCurrentWidget(widget)
+         self.scroll.verticalScrollBar().setValue(0)
+--- baseline/remix_layout_v856.py
++++ V884/remix_layout_v856.py
+@@ -184,6 +184,17 @@
+     eq.setFixedHeight(337)
+ 
+ 
++def fit_fir_content(fir):
++    """Size scrollable content from its real layout, including DSP exports."""
++    fir.setMinimumHeight(0)
++    fir.setMaximumHeight(16777215)
++    fir.main.activate()
++    height=max(570,fir.main.minimumSize().height(),fir.main.sizeHint().height(),
++               fir.main.totalHeightForWidth(fir.width()))
++    fir.setFixedHeight(height)
++    return height
++
++
+ def style_fir(fir,export_buttons):
+     _common(fir,"fir")
+     fir.note.setText("Auto FIR \u2022 Preview \u2022 Kh\u00f4ng ghi DSP")
+@@ -202,7 +213,7 @@
+         _insert_section(fir.main,fir.taps,"02  THI\u1ebeT L\u1eacP FIR"),
+         _insert_section(fir.main,fir.summary,"03  K\u1ebeT QU\u1ea2 / XU\u1ea4T H\u1ec6 S\u1ed0"),
+     ))
+-    fir.setFixedHeight(570)
++    fit_fir_content(fir)
+ 
+ 
+ def style_phase(engine):
+@@ -228,7 +239,7 @@
+         Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+     dock.scroll.setVerticalScrollBarPolicy(
+         Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+-    dock.page_heights={"phase":400,"eq":337,"fir":570}
++    dock.page_heights={"phase":400,"eq":337,"fir":fir.height()}
+     dock.heading.setAccessibleName("Che do cong cu hien tai")
+     dock._ux_v856=True
+     return dock

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+  "name": "remix-duo-license",
+  "main": "src/independent.ts",
+  "compatibility_date": "2026-11-02",
+  "workers_dev": true,
+  "observability": {
+    "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "remix_duo_license_db",
+      "database_id": "35483acd-5262-4950-b02a-8b37eb739b98"
+    }
+  ],
+  "vars": {
+    "PUBLIC_APP_NAME": "RemiX Duo License Admin",
+    "PUBLIC_APP_VERSION": "8.77"
+  },
+  "account_id": "1ff16b4d9ee7dc1e699b5d93b0890eb6",
+  "keep_vars": true
+}

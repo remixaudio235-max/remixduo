@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "remix-duo"
+version = "8.159.0"
+requires-python = ">=3.11,<3.12"
+dependencies = ["numpy==1.26.4", "scipy==1.17.1", "PyQt6==6.11.0", "cryptography>=43,<47"]
+[project.optional-dependencies]
+windows = ["pywin32>=306; sys_platform == 'win32'", "pywinauto>=0.6.9; sys_platform == 'win32'", "psutil>=5.9; sys_platform == 'win32'", "Pillow>=10"]
+macos = ["pyobjc-framework-Cocoa>=11; sys_platform == 'darwin'", "pyobjc-framework-Quartz>=11; sys_platform == 'darwin'", "pyobjc-framework-ApplicationServices>=11; sys_platform == 'darwin'", "pyobjc-framework-ScreenCaptureKit>=11; sys_platform == 'darwin'"]
+test = ["pytest>=8,<9"]
+build = ["pyinstaller>=6.11,<7"]
+[tool.setuptools.packages.find]
+where = ["src"]
+[tool.setuptools.package-data]
+remix_duo = ["resources/*"]
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+testpaths = ["tests/shared", "tests/contracts"]

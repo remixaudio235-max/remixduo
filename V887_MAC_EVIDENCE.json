@@ -1,0 +1,28 @@
+{
+  "install": {
+    "app": "/Users/dinhtran/Applications/RemiXDuo_V887_Overlay_QA_Final.app",
+    "dmg": "/Users/dinhtran/Desktop/RemiXDuo-8.87-overlay-qa-arm64-final.dmg",
+    "dmg_sha256": "0f69f71b8721c069619c52f5c8e25faaf44a68ece3e07afc69e23d32e2a2bbbe",
+    "installed_from_dmg": true,
+    "codesign_verify": true,
+    "frozen_selfcheck": true,
+    "processes": "26168 /Users/dinhtran/Applications/RemiXDuo_V887_Overlay_QA_Final.app/Contents/MacOS/RemiXDuo_Overlay_QA\n",
+    "visual_follow": "HOLD"
+  },
+  "build": {
+    "architecture": "arm64",
+    "source_sha256": "e0c751d80673af285352ec009f8c832d9ab2c88215a21caff1f77bac1bf42e67",
+    "shared_tests": true,
+    "frozen_selfcheck": true,
+    "native_smaart": false,
+    "clean_install": false,
+    "signed_public_release": false,
+    "dmg_sha256": "0f69f71b8721c069619c52f5c8e25faaf44a68ece3e07afc69e23d32e2a2bbbe",
+    "native_binaries_count": 222
+  },
+  "visual_follow": "HOLD: actual Mac session locked",
+  "windows_shared": "51 PASS",
+  "mac_shared": "49 PASS2SKIP",
+  "windows_legacy": "477 PASS1SKIP",
+  "review": "one P2 fixed RED->GREEN; reopen and calculate FIR passes"
+}

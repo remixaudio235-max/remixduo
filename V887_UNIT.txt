@@ -1,0 +1,13 @@
+...............F..................................                       [100%]
+================================== FAILURES ===================================
+__ test_mac_entry_uses_overlay_by_default_and_workspace_only_when_requested ___
+tests\shared\test_overlay_frontend.py:93: in test_mac_entry_uses_overlay_by_default_and_workspace_only_when_requested
+    assert entry.main([])==0 and called==['overlay']
+           ^^^^^^^^^^^^^^
+src\remix_duo\entry.py:29: in main
+    app.setWindowIcon(QIcon(str(paths.resource('remix_dou_swirl_toolbar32.png'))))
+                                ^^^^^^^^^^^^^^
+E   AttributeError: 'Paths' object has no attribute 'resource'
+=========================== short test summary info ===========================
+FAILED tests/shared/test_overlay_frontend.py::test_mac_entry_uses_overlay_by_default_and_workspace_only_when_requested
+1 failed, 49 passed in 5.71s

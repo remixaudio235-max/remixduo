@@ -1,0 +1,25 @@
+numpy==1.26.4
+scipy==1.17.1
+PyQt6==6.11.0
+cryptography<47,>=43
+
+[build]
+pyinstaller<7,>=6.11
+
+[macos]
+
+[macos:sys_platform == "darwin"]
+pyobjc-framework-Cocoa>=11
+pyobjc-framework-Quartz>=11
+pyobjc-framework-ApplicationServices>=11
+pyobjc-framework-ScreenCaptureKit>=11
+
+[test]
+pytest<9,>=8
+
+[windows]
+Pillow>=10
+
+[windows:sys_platform == "win32"]
+pywin32>=306
+pywinauto>=0.6.9

@@ -1,0 +1,92 @@
+
+ ⛅️ wrangler 4.156.1 (update available 4.156.2)
+───────────────────────────────────────────────
+Created:     2026-11-02T13:56:31.509Z
+Author:      remixaudio235@gmail.com
+Source:      Unknown (deployment)
+Message:     -
+Version(s):  (100%) c4894540-e039-4dc9-a6e7-74d15c2dfea9
+                 Created:  2026-11-02T13:56:30.420Z
+                     Tag:  -
+                 Message:  -
+
+Created:     2026-11-02T14:01:08.816Z
+Author:      remixaudio235@gmail.com
+Source:      Unknown (deployment)
+Message:     -
+Version(s):  (100%) 2754fe6f-d3fc-44b8-b109-0a797c391f03
+                 Created:  2026-11-02T14:01:08.093Z
+                     Tag:  -
+                 Message:  -
+
+Created:     2026-11-02T14:08:17.030Z
+Author:      remixaudio235@gmail.com
+Source:      Secret Change
+Message:     -
+Version(s):  (100%) b11be4f3-ba32-4edb-af50-ade7aa8a6b11
+                 Created:  2026-11-02T14:08:17.030Z
+                     Tag:  -
+                 Message:  -
+
+Created:     2026-11-02T14:08:32.268Z
+Author:      remixaudio235@gmail.com
+Source:      Unknown (deployment)
+Message:     -
+Version(s):  (100%) ec8f1e0d-aae2-4ad4-9fc6-82182acba084
+                 Created:  2026-11-02T14:08:30.815Z
+                     Tag:  -
+                 Message:  -
+
+Created:     2026-11-02T14:14:12.612Z
+Author:      remixaudio235@gmail.com
+Source:      Unknown (deployment)
+Message:     Deployed version b3969398
+Version(s):  (100%) b3969398-e316-49fa-9320-074d5aa4d53e
+                 Created:  2026-11-02T14:14:10.081Z
+                     Tag:  -
+                 Message:  Add variable: UPSTREAM_ADMIN_TOKEN
+
+Created:     2026-11-02T14:29:31.998Z
+Author:      remixaudio235@gmail.com
+Source:      Unknown (deployment)
+Message:     -
+Version(s):  (100%) e56d15a5-c51c-4823-a92f-5890a58289af
+                 Created:  2026-11-02T14:29:01.550Z
+                     Tag:  -
+                 Message:  Updated secret "DUO_ADMIN_TOKEN"
+
+Created:     2026-11-02T14:43:29.003Z
+Author:      remixaudio235@gmail.com
+Source:      Secret Change
+Message:     -
+Version(s):  (100%) b2938415-d499-4ea8-be58-673bd4f581b7
+                 Created:  2026-11-02T14:43:29.003Z
+                     Tag:  -
+                 Message:  -
+
+Created:     2026-11-02T14:43:58.614Z
+Author:      remixaudio235@gmail.com
+Source:      Unknown (deployment)
+Message:     -
+Version(s):  (100%) 5fa7dd98-e8b8-4ff0-9b74-ab96844c821f
+                 Created:  2026-11-02T14:43:58.044Z
+                     Tag:  -
+                 Message:  -
+
+Created:     2026-11-02T14:45:22.217Z
+Author:      remixaudio235@gmail.com
+Source:      Unknown (deployment)
+Message:     -
+Version(s):  (100%) bfb9524c-913a-4fa0-a535-24a4d5930815
+                 Created:  2026-11-02T14:45:20.271Z
+                     Tag:  -
+                 Message:  -
+
+Created:     2026-11-02T14:52:52.004Z
+Author:      remixaudio235@gmail.com
+Source:      Unknown (deployment)
+Message:     -
+Version(s):  (100%) b7d745a7-ffaf-48c0-bc1c-9165cd156b9c
+                 Created:  2026-11-02T14:52:51.366Z
+                     Tag:  -
+                 Message:  -
