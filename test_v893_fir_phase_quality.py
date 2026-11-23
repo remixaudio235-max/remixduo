@@ -46,8 +46,9 @@ def test_real_fir_phase_summary_reports_rms_and_not_an_absolute_flat_phase():
         fir.fir_hf.setValue(3350)
         fir.compute()
         wait_fir(app,fir)
-        assert fir.result is None
-        assert "QUALITY HOLD" in fir.details.toPlainText()
+        assert fir.result is not None
+        assert any(str(w).startswith("PREVIEW_ONLY:") for w in fir.result.warnings)
+        assert "PREVIEW_ONLY" in fir.details.toPlainText()
         assert "coherence≥0.65" in fir.details.toPlainText()
         assert not fir.export_wav.isEnabled()
     finally:

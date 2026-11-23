@@ -30,8 +30,9 @@ def test_manual_phase_checkbox_default_off_all_taps_and_proof_invalidation():
         fir.fir_hf.setValue(3350)
         fir.compute()
         wait_fir(app,fir,timeout=20)
-        assert fir.result is None
-        assert "HOLD" in fir.details.toPlainText()
+        assert fir.result is not None
+        assert any(str(w).startswith("PREVIEW_ONLY:") for w in fir.result.warnings)
+        assert "PREVIEW_ONLY" in fir.details.toPlainText()
         assert not fir.export_fir.isEnabled()
         fir.phase_plus.setChecked(True)
         assert fir.phase_plus.isChecked()

@@ -20,8 +20,8 @@ def test_gui_phase_512_35_188_holds_export_and_source_unchanged():
         fir.compute()
         wait_fir(app,fir,timeout=10)
         assert fir.calculate.isEnabled()
-        assert fir.result is None
-        assert fir._approved is None
+        assert fir.result is not None
+        assert any(str(w).startswith("PREVIEW_ONLY:") for w in fir.result.warnings)
         assert not fir.export_txt.isEnabled()
         assert not fir.export_wav.isEnabled()
         assert hashlib.sha256(source.read_bytes()).hexdigest()==before

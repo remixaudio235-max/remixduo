@@ -37,8 +37,9 @@ def test_v8_manual_trf_design_export_without_tick(tmp_path,monkeypatch):
         fir.taps.setCurrentIndex(fir.taps.findData(1024))
         fir.compute()
         wait_fir(app,fir)
-        assert fir.result is None
-        assert "HOLD" in fir.details.toPlainText()
+        assert fir.result is not None
+        assert any(str(w).startswith("PREVIEW_ONLY:") for w in fir.result.warnings)
+        assert "PREVIEW_ONLY" in fir.details.toPlainText()
         assert not fir.export_txt.isEnabled() and not fir.export_wav.isEnabled()
         assert fired==[], "Manual source must not present as native overlay"
         assert hashlib.sha256(local.read_bytes()).hexdigest()==original_sha

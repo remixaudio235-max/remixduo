@@ -51,12 +51,15 @@ def test_fir_red_blocks_removed_and_active_controls_preserved():
         fir.taps.setCurrentIndex(fir.taps.findData(1024))
         fir.compute()
         wait_fir(app,fir,timeout=25)
-        assert fir.result is None
+        assert fir.result is not None
+        assert any(str(w).startswith("PREVIEW_ONLY:") for w in fir.result.warnings)
         assert "không đủ 0.5 octave" in fir.details.toPlainText()
         # The safety detail remains internal and hidden from the compact UI.
         assert fir.details.toPlainText()
         assert fir.summary.isHidden() and fir.details.isHidden()
-        assert fir._approved is None
+        # Provenance may be retained for the visible preview, while the
+        # independent PREVIEW_ONLY quality gate keeps every export disabled.
+        assert fir._approved is not None
         assert not fir.export_fir.isEnabled()
         fir.phase_plus.setChecked(True)
         assert fir.result is None

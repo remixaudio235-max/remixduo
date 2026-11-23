@@ -18,8 +18,9 @@ def test_default_range_phase_fir_is_computed_and_reports_resolvable_lf(monkeypat
         fir.compute()
         wait_fir(app, fir)
         text = fir.details.toPlainText()
-        assert fir.result is None
-        assert "QUALITY HOLD" in text
+        assert fir.result is not None
+        assert any(str(w).startswith("PREVIEW_ONLY:") for w in fir.result.warnings)
+        assert "PREVIEW_ONLY" in text
         assert not fir.export_wav.isEnabled()
     finally:
         hub.close()

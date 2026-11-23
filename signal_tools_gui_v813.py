@@ -1947,6 +1947,8 @@ class FIRDialog(TFDialog):
         self._refresh_export(notify=False)
         print("V8124_FIR_OK",mode,selected_taps,lf,hf,self._phase_quality_summary,flush=True)
         self._fir_warnings=tuple(fir_warnings)
+        notice_message=None
+        graph=getattr(self.engine,"graph_phase" if mode=="phase" else "graph_mag",None)
         if fir_warnings:
             # V8.125: created anyway; tell the user what is weak about it.
             print("V8125_FIR_WARN"," | ".join(fir_warnings)[:300],flush=True)
@@ -1954,15 +1956,15 @@ class FIRDialog(TFDialog):
                 "\nCẢNH BÁO:\n- "+"\n- ".join(fir_warnings))
             # V8.138: exactly one compact Toast, on the plot when available;
             # never duplicate it over the FIR controls.
-            graph=getattr(self.engine,"graph_phase" if mode=="phase" else "graph_mag",None)
             if not self._quality_export_ok():
-                self.notice(fir_export_hold_vn(
-                    self.result,self._proof_current(check_hash=True)),graph)
+                notice_message=fir_export_hold_vn(
+                    self.result,self._proof_current(check_hash=True))
             else:
-                self.notice("FIR: "+"; ".join(fir_warnings),graph)
+                notice_message="FIR: "+"; ".join(fir_warnings)
         elif not self._proof_current(check_hash=True):
-            graph=getattr(self.engine,"graph_phase" if mode=="phase" else "graph_mag",None)
-            self.notice(fir_export_hold_vn(self.result,False),graph)
+            notice_message=fir_export_hold_vn(self.result,False)
+        if notice_message:
+            self.notice(notice_message,graph)
         if self._manual_token is None:
             self.preview_ready.emit(preview)
         else:
