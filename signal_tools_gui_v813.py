@@ -6,7 +6,7 @@ V8.12 engine), Auto EQ, or FIR. AutoEQ/FIR calculate from stored TF data;
 nothing is written to Smaart or hardware.
 """
 from __future__ import annotations
-import math,concurrent.futures,hashlib,os  # V8.119: os used by PEQ drag reject path
+import math,concurrent.futures,hashlib,json,os  # os also gates opt-in QA control
 from dataclasses import replace
 from pathlib import Path
 from trf_core import read_trf
@@ -2160,6 +2160,11 @@ class ToolHub(QWidget):
         self.eq.native_enabled.connect(self.native_eq.set_enabled)
         self.buttons={}
         self.active=None
+        # Opt-in local QA control.  Production has no environment variable,
+        # therefore no file polling or externally reachable control surface.
+        qa_control=os.environ.get("REMIX_QA_CONTROL_FILE","").strip()
+        self._qa_control_path=Path(qa_control) if qa_control else None
+        self._qa_control_seq=-1
         self._was_target=False
         self._last_pair_key=None
         self._last_host_rect=None
@@ -2279,6 +2284,58 @@ class ToolHub(QWidget):
         # wait for native button anchors; do not flash in screen center
         self.hide()
         self.dock.hide()
+
+    def _qa_snapshot(self):
+        """Small, non-sensitive state used by the physical GUI matrix runner."""
+        return {
+            "active":self.active,
+            "workspace_visible":bool(self.workspace_visible),
+            "host_hwnd":int(self._last_hwnd or 0),
+            "eq_ready":self.eq.result is not None,
+            "fir_ready":self.fir.result is not None,
+            "eq_summary":self.eq.summary.text(),
+            "fir_summary":self.fir.summary.text(),
+        }
+
+    def _poll_qa_control(self):
+        """Execute a strict allow-list of preview-only commands for QA builds.
+
+        Enabled only when REMIX_QA_CONTROL_FILE is explicitly supplied before
+        process start.  No export, DSP write, Smaart mutation, or settings
+        command exists here.
+        """
+        path=self._qa_control_path
+        if path is None or not path.is_file():return
+        try:
+            if path.stat().st_size>4096:return
+            request=json.loads(path.read_text(encoding="utf-8"))
+            seq=int(request.get("seq",-1))
+            if seq<=self._qa_control_seq:return
+            command=str(request.get("command","")).strip()
+            self._qa_control_seq=seq
+            actions={
+                "select_phase":lambda:self.select("phase"),
+                "select_eq":lambda:self.select("eq"),
+                "select_fir":lambda:self.select("fir"),
+                "align_phase":self.engine.align,
+                "compute_eq":self.eq.compute,
+                "compute_fir":self.fir.compute,
+                "status":lambda:None,
+            }
+            if command not in actions:raise ValueError("QA command not allowed")
+            actions[command]()
+            response={"seq":seq,"ok":True,"command":command,
+                      "state":self._qa_snapshot()}
+        except Exception as exc:
+            response={"seq":locals().get("seq",-1),"ok":False,
+                      "error":type(exc).__name__+": "+str(exc)}
+        try:
+            ack=path.with_suffix(path.suffix+".ack.json")
+            tmp=ack.with_suffix(ack.suffix+".tmp")
+            tmp.write_text(json.dumps(response,ensure_ascii=False),encoding="utf-8")
+            tmp.replace(ack)
+        except OSError:
+            pass
     def _menu_style(self,tool):
         colors={"phase":("#58E89A","#061A13"),
                 "eq":("#FFA34C","#201105"),
@@ -2515,6 +2572,7 @@ class ToolHub(QWidget):
             if state.text()!=label:state.setText(label)
         self.fir.refresh_sources()
         self.fir._refresh_export()
+        self._poll_qa_control()
         target=locate_smaart(prefer_hwnd=(
             getattr(self,"_last_hwnd",None) or getattr(self.engine.observer,"hwnd",None)))
         active=bool(target and self.engine._target_is_foreground(target.hwnd))

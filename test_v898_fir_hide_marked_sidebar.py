@@ -18,11 +18,11 @@ def test_fir_red_blocks_removed_and_active_controls_preserved():
         app.processEvents()
         hidden=(fir.offline_button,fir.offline_clear,
                 fir.fir_range_label,fir.fir_lf,fir.fir_hf,
-                fir.overlay_status,fir.fs,fir._ux_sections[2],
-                fir.summary,fir.details)
+                fir.overlay_status,fir.fs,fir.details)
         assert all(widget.isHidden() for widget in hidden)
         assert [x.text()[:2] for x in fir._ux_sections]==["01","02","03"]
-        assert all(not x.isHidden() for x in fir._ux_sections[:2])
+        assert all(not x.isHidden() for x in fir._ux_sections)
+        assert not fir.summary.isHidden()
         assert not fir.source.isHidden()
         assert not fir.taps.isHidden()
         assert fir.fir_mode.isHidden()  # legacy mode state remains internal
@@ -56,7 +56,7 @@ def test_fir_red_blocks_removed_and_active_controls_preserved():
         assert "không đủ 0.5 octave" in fir.details.toPlainText()
         # The safety detail remains internal and hidden from the compact UI.
         assert fir.details.toPlainText()
-        assert fir.summary.isHidden() and fir.details.isHidden()
+        assert not fir.summary.isHidden() and fir.details.isHidden()
         # Provenance may be retained for the visible preview, while the
         # independent PREVIEW_ONLY quality gate keeps every export disabled.
         assert fir._approved is not None
@@ -64,7 +64,7 @@ def test_fir_red_blocks_removed_and_active_controls_preserved():
         fir.phase_plus.setChecked(True)
         assert fir.result is None
         assert not fir.export_fir.isEnabled()
-        assert fir.summary.isHidden() and fir.details.isHidden()
+        assert not fir.summary.isHidden() and fir.details.isHidden()
         assert all(w.isHidden() for w in hidden)
     finally:
         hub.close()

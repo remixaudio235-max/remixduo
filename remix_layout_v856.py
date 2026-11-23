@@ -263,13 +263,18 @@ def style_fir(fir,export_buttons):
     # V8.98: remove three user-marked visual regions while preserving all
     # underlying signal bindings and Smaart plot dragging. In particular,
     # the LF/HF values and saved Fs MUST still drive the FIR worker.
+    # Always show the compact result/proof summary.  Hiding it made a
+    # completed FIR indistinguishable from an idle panel on real Smaart.
+    fir.summary.setMinimumHeight(40)
+    fir.summary.setMaximumHeight(78)
+    fir.summary.show()
+    fir._ux_sections[2].show()
     for widget in (fir.offline_button,fir.offline_clear,
                    fir.fir_range_label,fir.fir_lf,fir.fir_hf,
-                   fir.overlay_status,fir.fs,fir._ux_sections[2],
-                   fir.summary,fir.details):
+                   fir.overlay_status,fir.fs,fir.details):
         widget.hide()
-    # Keep summary/details objects live internally for quality diagnostics,
-    # warnings and export proofs, but don't display either red-box panel.
+    # Full diagnostics stay internal; the finite result and proof state are
+    # visible in the compact summary without exposing the old detail block.
     fit_fir_content(fir)
 
 

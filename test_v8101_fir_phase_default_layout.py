@@ -39,7 +39,7 @@ def test_first_open_defaults_phase_with_compact_order_and_manual_phaseplus():
         assert fir._fir_actions_layout is fir._action_row
         assert fir.taps_label.height()==16
         assert fir.taps_label.width()==67
-        assert fir.height()<=280
+        assert fir.height()<=380
         # 1 row / 2 columns: label left, taps combobox right.
         assert fir.taps_label.geometry().right()<fir.taps.geometry().left()
         assert abs(fir.taps_label.geometry().center().y()-
@@ -55,7 +55,8 @@ def test_first_open_defaults_phase_with_compact_order_and_manual_phaseplus():
         assert fir.calculate.geometry().top()==fir.export_fir.geometry().top()
         assert fir.calculate.geometry().height()==fir.export_fir.geometry().height()
         assert fir.calculate.geometry().right()<fir.export_fir.geometry().left()
-        assert fir.summary.isHidden() and fir.details.isHidden()
+        assert not fir.summary.isHidden() and fir.details.isHidden()
+        assert 40<=fir.summary.maximumHeight()<=78
         assert fir.offline_button.isHidden() and fir.offline_clear.isHidden()
         assert fir.fir_lf.isHidden() and fir.fir_hf.isHidden()
 
