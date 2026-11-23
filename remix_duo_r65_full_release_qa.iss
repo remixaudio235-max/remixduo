@@ -35,6 +35,6 @@ Source: "dist\RemiXDuoSmaartWatcher.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dist\RemiXDuoSmaartSetup.exe"; DestDir: "{app}"; Flags: ignoreversion
 [Icons]
 Name: "{group}\RemiX Duo 8.181 R65 Full Release QA"; Filename: "{app}\RemiXDuo.exe"
-Name: "{autodesktop}\RemiX Duo 8.181 R65 Full Release QA"; Filename: "{app}\RemiXDuo.exe"; WorkingDir: "{app}"
+Name: "{autodesktop}\RemiX Duo"; Filename: "{app}\RemiXDuo.exe"; WorkingDir: "{app}"
 ; R65 isolated QA install: unique AppId, no postinstall run.
 ; QA never registers autostart, modifies the default application, or starts a generator.
