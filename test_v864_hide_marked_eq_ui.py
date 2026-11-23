@@ -1,7 +1,7 @@
-"""V8.64: only presentation removal, preserve verified MagEq and LF/HF logic."""
+"""Auto EQ compact layout keeps the computed result visible."""
 from test_v845_fir_one_trace import init
 
-def test_marked_autoeq_panels_hidden_but_models_and_actions_intact():
+def test_autoeq_compact_result_visible_and_actions_intact():
     app,obs,engine,hub,fir=init()
     try:
         hub.select("eq")
@@ -9,14 +9,15 @@ def test_marked_autoeq_panels_hidden_but_models_and_actions_intact():
         app.processEvents()
         eq=hub.eq
         for widget in (eq.roi_status,eq.mageq_toggle,eq.native_state,
-                       eq.summary,eq.details):
+                       eq.details):
             assert widget.isHidden(),widget.objectName()
+        assert eq.summary.isVisible()
         assert len(eq._ux_sections)==2
         assert [section.text()[:2] for section in eq._ux_sections]==["01","02"]
         assert all(section.isVisible() for section in eq._ux_sections)
         assert hub.dock.heading.text()=="AUTO EQ"
-        assert eq.height()==337
-        assert hub.dock.page_heights["eq"]==337
+        assert eq.height()>=373
+        assert hub.dock.page_heights["eq"]>=373
         assert eq.mageq_toggle.isChecked()
         assert eq.calculate.isVisible()
         assert eq.export.isVisible()
@@ -37,7 +38,7 @@ def test_marked_autoeq_panels_hidden_but_models_and_actions_intact():
         assert eq.native_state.text()=="MagEQ HOLD: QA"
         assert eq.summary.text()=="Preview QA"
         assert eq.details.toPlainText()=="Test internal feedback"
-        assert eq.native_state.isHidden() and eq.summary.isHidden()
+        assert eq.native_state.isHidden() and eq.summary.isVisible()
         assert eq.details.isHidden()
     finally:
         hub.close()

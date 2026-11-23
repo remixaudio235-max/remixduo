@@ -26,6 +26,7 @@ from smaart_mag_plot_detector import detect_magnitude_rect
 from phase_axis_absolute_v79 import _dilate_9
 from tf_display_smoothing import smooth_phase_unit_phasor,smooth_log_octaves
 from smaart_smooth_sync_v811 import read_saved_smooth
+from mag_sum_native_v826 import smaart8_raster_candidates
 
 from remix_duo.core.fir_preview import FIRSource, make_source, PREVIEW_COHERENCE_GATE
 from worker_lifecycle_v8142 import bounded_shutdown
@@ -112,6 +113,12 @@ LAST_HOLD_REASON=[None]
 def _hold(reason):
     LAST_HOLD_REASON[0]=reason
     return None
+
+
+def native_trace_hold_reason():
+    """Actionable fail-closed guidance when the source has no native fit."""
+    return ("Không đủ phần đường Trace nhìn thấy trên plot Mag — đổi vùng LF/HF "
+            "sang đoạn Trace đang hiện hoặc zoom trục dB, rồi bấm TẠO FIR lại")
 
 
 def native_fir_frame(hwnd,src,center_phase_top=180.,prior=None,hint_color=None,
@@ -215,11 +222,23 @@ def native_fir_frame(hwnd,src,center_phase_top=180.,prior=None,hint_color=None,
             choice=ColorFit(prior.mag_color,candidate,0.,True)
     if choice is None:
         extra={"hint":hint_color} if hint_color else {}
-        choice=choose_color_fit(img,mag,window,src.freqs,source_display,
-                                src.coherence,**extra)
+        original_mag=tuple(mag)
+        candidates=(smaart8_raster_candidates(mag)
+                    if edition==8 else (tuple(mag),))
+        for candidate in candidates:
+            attempted=choose_color_fit(img,candidate,window,src.freqs,
+                                       source_display,src.coherence,**extra)
+            if attempted is None or not attempted.accepted:
+                continue
+            choice=attempted
+            if candidate!=original_mag:
+                inset=int(candidate[0]-original_mag[0])
+                mag=tuple(candidate)
+                phase=(int(phase[0]+inset),int(phase[1]),
+                       int(candidate[2]),int(phase[3]))
+            break
     if choice is None or not choice.accepted:
-        return _hold("Không nhận ra đường Trace trên plot Mag — kiểm tra Trace đang hiện, "
-                     "không bị Trace khác che")
+        return _hold(native_trace_hold_reason())
     fit=choice.fit
     if not (fit.accepted and fit.bins>=55 and fit.score>=.78):
         return _hold(f"Đường Trace trên Smaart không khớp dữ liệu ({fit.score:.0%}) — kéo LF/HF "

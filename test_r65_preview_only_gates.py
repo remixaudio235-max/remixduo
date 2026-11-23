@@ -4,6 +4,7 @@ import numpy as np
 
 from native_eq_mag_v06 import build_state
 from signal_tools_gui_v813 import FIRDialog, fir_export_hold_vn
+from fir_native_v846 import native_trace_hold_reason
 
 
 def test_preview_only_fir_never_authorizes_export():
@@ -24,6 +25,13 @@ def test_fir_hold_toast_guides_lf_hf_for_coherence_and_provenance():
     assert "LF/HF" in text
     assert "coherence ≥0.65" in text
     assert "1 Trace" in text and "3/3" in text
+
+
+def test_native_trace_hold_explains_viewport_recovery():
+    text=native_trace_hold_reason()
+    assert "LF/HF" in text
+    assert "zoom trục dB" in text
+    assert "TẠO FIR lại" in text
 
 
 def test_dsp_export_rechecks_preview_quality_even_when_provenance_is_current():

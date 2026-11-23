@@ -6,6 +6,36 @@ from test_v860_fir_native_smaart_smoothing import setup,MAG,PHASE,WIN
 import smaart8_api3_readonly_v868 as edition
 import smaart8_plot_profile_v868 as profile
 
+
+def test_v8_fir_retries_responsive_inner_raster_and_aligns_phase(monkeypatch):
+    src,calls,smooth=setup(monkeypatch)
+    monkeypatch.setattr(edition,"process_smaart_major",lambda h:8)
+    monkeypatch.setattr(profile,"detect_v8_profile",lambda image:(PHASE,MAG))
+    fit=n.NativeMagFit(186.,11.,0.,.91,0.,224,True,"inner native source")
+    seen=[]
+    inset=int(round(MAG[2]*.0225))
+    inner_mag=(MAG[0]+inset,MAG[1],MAG[2]-2*inset,MAG[3])
+    inner_phase=(PHASE[0]+inset,PHASE[1],PHASE[2]-2*inset,PHASE[3])
+
+    def choose(image,rect,*args,**kwargs):
+        seen.append(tuple(rect))
+        if tuple(rect)==inner_mag:
+            return n.ColorFit("blue",fit,0.,True)
+        return None
+
+    def phasefit(image,rect,*args,**kwargs):
+        assert tuple(rect)==inner_phase
+        return 361.,.97
+
+    monkeypatch.setattr(n,"choose_color_fit",choose)
+    monkeypatch.setattr(n,"phase_native_fit",phasefit)
+    frame=n.native_fir_frame(123,src,center_phase_top=330.,
+        smooth_hint=(smooth.mag_oct,smooth.phase_oct))
+    assert frame is not None and frame.phase_verified
+    assert frame.mag==inner_mag
+    assert frame.phase==inner_phase
+    assert seen==[MAG,inner_mag]
+
 def test_v8_phase_fir_uses_verified_smaart8_titles_not_suite(monkeypatch):
     src,calls,smooth=setup(monkeypatch)
     monkeypatch.setattr(edition,"process_smaart_major",lambda h:8)

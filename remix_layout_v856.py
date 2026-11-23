@@ -186,11 +186,17 @@ def style_eq(eq,buttons):
     # ROI dragging, native verification, HOLD logic and exports are unchanged.
     # Only the two user-marked visual regions are hidden.
     for hidden_control in (eq.roi_status,eq.mageq_toggle,eq.native_state,
-                           eq.summary,eq.details):
+                           eq.details):
         hidden_control.hide()
+    # The compact result is the user's completion proof.  Keep the verbose
+    # diagnostics hidden, but never hide the PEQ/WRMS summary itself.
+    eq.summary.show()
+    eq.summary.setWordWrap(True)
+    eq.summary.setMinimumHeight(34)
+    eq.summary.setMaximumHeight(50)
     # MagEq overlay stays enabled by default even without the visible toggle.
     # Other modules may still temporarily setChecked(False) as before.
-    eq.setFixedHeight(337)
+    eq.setFixedHeight(373)
 
 
 def fit_fir_content(fir):
@@ -301,7 +307,7 @@ def style_dock(dock,engine,eq,fir,eq_buttons=None,fir_buttons=None):
         Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
     dock.scroll.setVerticalScrollBarPolicy(
         Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-    dock.page_heights={"phase":400,"eq":337,"fir":fir.height()}
+    dock.page_heights={"phase":400,"eq":373,"fir":fir.height()}
     dock.heading.setAccessibleName("Che do cong cu hien tai")
     dock._ux_v856=True
     return dock

@@ -24,6 +24,23 @@ class SumMagAxis:
     x_min: float = 20.0
     x_max: float = 20000.0
 
+
+def smaart8_raster_candidates(rect):
+    """Strict inner-raster candidates ordered for responsive Smaart 8.
+
+    The role detector returns the full chart box, including symmetric axis
+    gutters.  Try the geometry-scaled gutter first, then the proven legacy
+    widths.  Stop at the first independently verified source match.
+    """
+    x,y,w,h=map(int,rect)
+    result=[]
+    for inset in (0,int(round(w*.0225)),20,27,30,35):
+        candidate=(x+inset,y,w-2*inset,h)
+        if candidate in result or candidate[2]<320:
+            continue
+        result.append(candidate)
+    return tuple(result)
+
 def axis_from_native_image(image, plot_rect, window_rect, traces,
                            *, minimum_score=.82, minimum_source_margin=.08):
     """Pure matching: returns a relative, source-registered display transform."""
@@ -187,20 +204,16 @@ def capture_sum_mag_axis(hwnd,mag_rect,traces):
         # including its left/right axis gutters.  Source X registration must
         # use the inner raster.  Keep the original first, then test only small
         # symmetric gutter insets and require the same strict trace match.
-        candidates=[mag_rect]
-        x,y,w,h=map(int,mag_rect)
-        for inset in (20,27,30,35):
-            if w>2*inset+320:
-                candidates.append((x+inset,y,w-2*inset,h))
-        matches=[]
-        for candidate in candidates:
+        source=None
+        source_rect=None
+        for candidate in smaart8_raster_candidates(mag_rect):
             fit=_smaart8_native_source_axis(image,candidate,window_rect,traces)
             if fit.accepted:
-                matches.append((float(fit.score),candidate,fit))
-        source=max(matches,key=lambda item:item[0])[2] if matches else fit
-        if not source.accepted:
-            return source
-        source_rect=max(matches,key=lambda item:item[0])[1]
+                source=fit
+                source_rect=candidate
+                break
+        if source is None:
+            return fit
         if source_rect!=mag_rect:
             grid=fit_native_mag_grid(image,source_rect,window_rect,interval)
         if grid.accepted:
