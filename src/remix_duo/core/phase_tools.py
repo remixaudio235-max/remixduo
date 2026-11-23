@@ -13,6 +13,7 @@ import numpy as np
 COARSE_MAX_HZ = 1000.
 SEARCH_RANGE_S = .300
 SEARCH_STEP_S = 5e-5
+COARSE_SEARCH_STEP_S = 5e-4
 _CHUNK = 512
 
 
@@ -29,15 +30,28 @@ def remove_bulk_delay(f, h, weights):
     dense = f <= COARSE_MAX_HZ
     if np.count_nonzero(dense) < 8:
         dense = np.ones_like(f, dtype=bool)
-    taus = np.arange(-SEARCH_RANGE_S, SEARCH_RANGE_S + SEARCH_STEP_S / 2, SEARCH_STEP_S)
-    best_score, coarse = -1., 0.
     wd, ud, fd = w[dense], unit[dense], f[dense]
-    for k in range(0, len(taus), _CHUNK):
-        chunk = taus[k:k + _CHUNK]
-        score = np.abs((wd * ud) @ np.exp(2j * np.pi * np.outer(fd, chunk)))
-        i = int(np.argmax(score))
-        if score[i] > best_score:
-            best_score, coarse = float(score[i]), float(chunk[i])
+    def strongest(taus):
+        best_score, best_tau = -1., 0.
+        for k in range(0, len(taus), _CHUNK):
+            chunk = taus[k:k + _CHUNK]
+            score = np.abs((wd * ud) @ np.exp(2j * np.pi * np.outer(fd, chunk)))
+            i = int(np.argmax(score))
+            if score[i] > best_score:
+                best_score, best_tau = float(score[i]), float(chunk[i])
+        return best_tau
+
+    # A full 50 us sweep creates ~12k complex columns every time this safety
+    # metric runs (up to six times per Phase FIR). Locate the broadband peak
+    # at 0.5 ms first, then retain the original 50 us resolution locally.
+    coarse_grid = np.arange(-SEARCH_RANGE_S,
+                            SEARCH_RANGE_S + COARSE_SEARCH_STEP_S / 2,
+                            COARSE_SEARCH_STEP_S)
+    coarse = strongest(coarse_grid)
+    lo = max(-SEARCH_RANGE_S, coarse - COARSE_SEARCH_STEP_S)
+    hi = min(SEARCH_RANGE_S, coarse + COARSE_SEARCH_STEP_S)
+    fine_grid = np.arange(lo, hi + SEARCH_STEP_S / 2, SEARCH_STEP_S)
+    coarse = strongest(fine_grid)
     residual = np.unwrap(np.angle(h * np.exp(2j * np.pi * f * coarse)))
     line = np.polyfit(f, residual, 1, w=np.sqrt(w))
     excess = residual - np.polyval(line, f)
