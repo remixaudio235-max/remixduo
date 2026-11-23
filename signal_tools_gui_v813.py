@@ -81,6 +81,28 @@ def autoeq_error_vn(reason):
             "PEQ hoặc Boost tối đa rồi bấm AUTO EQ lại.")
 
 
+def fir_export_hold_vn(result,provenance_ok):
+    """Compact operator guidance for a locked FIR Export/DSP action."""
+    warnings=tuple(str(w).lower() for w in
+                   (getattr(result,"warnings",()) or ()))
+    preview_only=any(w.startswith("preview_only:") for w in warnings)
+    if any("coherence" in w for w in warnings):
+        action=("Kéo LF/HF bỏ vùng coherence thấp, chỉ giữ đoạn đo ổn định "
+                "(ưu tiên coherence ≥0.65), rồi bấm TẠO FIR lại.")
+    elif any("coverage" in w or "0.5 octave" in w for w in warnings):
+        action=("Kéo LF/HF vào đoạn TF liên tục có đủ dữ liệu, loại vùng mất "
+                "Magnitude/Phase; giữ phần hữu dụng ít nhất 0.5 octave.")
+    elif preview_only:
+        action=("Thu hẹp LF/HF để bỏ hố sâu hoặc vùng dao động mạnh; thử dịch LF "
+                "lên hoặc HF xuống, rồi bấm TẠO FIR lại.")
+    else:
+        action=("Nếu vừa đổi LF/HF, bấm TẠO FIR lại để tạo proof khớp vùng mới.")
+    if not provenance_ok:
+        action+=(" Giữ đúng 1 Trace tick cho tới khi xác minh 3/3 và không đổi "
+                 "viewport/nguồn trong lúc xuất.")
+    return "FIR Export/DSP HOLD · "+action
+
+
 def _middle_elide(text,limit):
     """Keep start and end of a trace name: 'VIP 2 SKY…find 8,83-1'."""
     text=str(text)
@@ -1484,9 +1506,10 @@ class FIRDialog(TFDialog):
             return False
         return True
 
-    def _refresh_export(self):
-        ready=(self._proof_current(check_hash=True) and
-               self._quality_export_ok())
+    def _refresh_export(self,*_signal_args,notify=True):
+        proof_ok=self._proof_current(check_hash=True)
+        quality_ok=self._quality_export_ok()
+        ready=proof_ok and quality_ok
         self.export_txt.setEnabled(ready)
         self.export_wav.setEnabled(ready)
         if hasattr(self,"export_fir"):
@@ -1496,6 +1519,17 @@ class FIRDialog(TFDialog):
             allowed=ready and not validate(
                 self.result,get_profile(self.dsp_profile.currentData()))
             self.export_dsp.setEnabled(bool(allowed))
+        result=getattr(self,"result",None)
+        signature=(id(result),proof_ok,quality_ok) if result is not None and not ready else None
+        if notify and signature is not None and signature!=getattr(
+                self,"_export_hold_notice_signature",None):
+            self._export_hold_notice_signature=signature
+            mode=getattr(result,"mode","mag")
+            graph=getattr(self.engine,
+                          "graph_phase" if mode=="phase" else "graph_mag",None)
+            self.notice(fir_export_hold_vn(result,proof_ok),graph)
+        elif signature is None:
+            self._export_hold_notice_signature=None
 
     def _quality_export_ok(self):
         """Preview is unconditional; unsafe/unproven taps never leave the app."""
@@ -1510,9 +1544,10 @@ class FIRDialog(TFDialog):
         Never enable unsupported tap limits, and do not bypass the existing
         SHA/trace/Fs/session proof or the post-file-dialog proof recheck.
         """
-        if not self._proof_current(check_hash=True):
-            self.invalidate()
-            return self.warning("FIR Export HOLD: cần một Trace đã xác minh")
+        proof_ok=self._proof_current(check_hash=True)
+        if not proof_ok or not self._quality_export_ok():
+            return self.notice(fir_export_hold_vn(self.result,proof_ok),
+                               getattr(self.engine,"graph_mag",None))
         from fir_dsp_export_v872 import get_profile,validate
         self.export_txt_action.setEnabled(True)
         for name,action in self.export_vendor_actions.items():
@@ -1527,9 +1562,10 @@ class FIRDialog(TFDialog):
 
     def save_dsp_profile(self,profile_name=None):
         from fir_dsp_export_v872 import get_profile,write_export,validate
-        if not self._proof_current(check_hash=True):
-            self.invalidate()
-            return self.warning("DSP Export HOLD: Trace/Fs/file thay đổi")
+        proof_ok=self._proof_current(check_hash=True)
+        if not proof_ok or not self._quality_export_ok():
+            return self.notice(fir_export_hold_vn(self.result,proof_ok),
+                               getattr(self.engine,"graph_mag",None))
         selected=(profile_name if isinstance(profile_name,str) and profile_name
                   else self.dsp_profile.currentData())
         profile=get_profile(selected)
@@ -1541,9 +1577,10 @@ class FIRDialog(TFDialog):
             "FIR coefficients (*"+profile["extension"]+")",
             options=QFileDialog.Option.DontUseNativeDialog)
         if not dest:return
-        if not self._proof_current(check_hash=True):
-            self.invalidate()
-            return self.warning("DSP Export HOLD: nguồn thay đổi khi chọn đường dẫn")
+        proof_ok=self._proof_current(check_hash=True)
+        if not proof_ok or not self._quality_export_ok():
+            return self.notice(fir_export_hold_vn(self.result,proof_ok),
+                               getattr(self.engine,"graph_mag",None))
         try:
             write_export(self.result,profile["name"],dest)
         except Exception as exc:return self.warning(exc)
@@ -1907,7 +1944,7 @@ class FIRDialog(TFDialog):
             + "Boost +6 dB max / Cut -12 dB max\n"
             "FIR PHASE: delay-compensated preview only; exported taps retain real delay.\n"
             "Xuất FIR taps, không nạp DSP/Smaart.")
-        self._refresh_export()
+        self._refresh_export(notify=False)
         print("V8124_FIR_OK",mode,selected_taps,lf,hf,self._phase_quality_summary,flush=True)
         self._fir_warnings=tuple(fir_warnings)
         if fir_warnings:
@@ -1918,7 +1955,14 @@ class FIRDialog(TFDialog):
             # V8.138: exactly one compact Toast, on the plot when available;
             # never duplicate it over the FIR controls.
             graph=getattr(self.engine,"graph_phase" if mode=="phase" else "graph_mag",None)
-            self.notice("FIR: "+"; ".join(fir_warnings),graph)
+            if not self._quality_export_ok():
+                self.notice(fir_export_hold_vn(
+                    self.result,self._proof_current(check_hash=True)),graph)
+            else:
+                self.notice("FIR: "+"; ".join(fir_warnings),graph)
+        elif not self._proof_current(check_hash=True):
+            graph=getattr(self.engine,"graph_phase" if mode=="phase" else "graph_mag",None)
+            self.notice(fir_export_hold_vn(self.result,False),graph)
         if self._manual_token is None:
             self.preview_ready.emit(preview)
         else:
