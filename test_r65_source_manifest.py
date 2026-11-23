@@ -18,3 +18,11 @@ def test_r65_version_metadata_is_consistent():
     for name in ("main", "watcher", "setup"):
         text = (root / f"version_info_v8181_{name}.txt").read_text()
         assert "8.181.0.0" in text
+
+
+def test_builder_verifies_manifest_before_restricting_path():
+    root = Path(__file__).resolve().parent
+    script = (root / "build_r65_full_release_qa.ps1").read_text(encoding="utf-8-sig")
+    verify = script.index("r65_source_manifest.py")
+    restricted_path = script.index("$env:PATH =")
+    assert verify < restricted_path

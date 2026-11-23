@@ -11,11 +11,11 @@ if (!(Test-Path $inno)) { throw 'MISSING_INNO_SETUP' }
 if (!(Test-Path (Join-Path $source 'RELEASE_SOURCE_MANIFEST_R65.sha256'))) {
     throw 'MISSING_RELEASE_SOURCE_MANIFEST'
 }
-$env:PATH = @((Split-Path -Parent $python),"$env:SystemRoot\System32",
-              $env:SystemRoot,(Split-Path -Parent $inno)) -join ';'
 Set-Location $source
 & $python (Join-Path $source 'r65_source_manifest.py') --verify
 if ($LASTEXITCODE -ne 0) { throw 'R65_SOURCE_MANIFEST_VERIFICATION_FAILED' }
+$env:PATH = @((Split-Path -Parent $python),"$env:SystemRoot\System32",
+              $env:SystemRoot,(Split-Path -Parent $inno)) -join ';'
 $cythonLib=Join-Path $source 'build\cython_lib'
 $cythonTemp=Join-Path $source 'build\cython_temp'
 & $python (Join-Path $source 'verify_r60_prebuilt_cython.py')
