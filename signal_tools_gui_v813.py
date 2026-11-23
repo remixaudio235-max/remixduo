@@ -704,8 +704,9 @@ class EQDialog(TFDialog):
             self.cut.setValue(float(r.cut_limit_db))
             self.boost.blockSignals(False)
             self.cut.blockSignals(False)
-        can_draw=((r.status=="PREVIEW_READY" and bool(r.peqs)) or
-                  (r.status=="NO_EQ_NEEDED" and not r.peqs))
+        # Every finite solver result gets a visible preview. Unsafe/no-solution
+        # statuses are bypass/original-only and remain impossible to export.
+        can_draw=True
         if can_draw:
             self._export_source_token=pending[7]
             self._export_file_sha=pending[9]
@@ -756,7 +757,8 @@ class EQDialog(TFDialog):
         else:
             self._export_snapshot=None
         if r.status!="NO_EQ_NEEDED" and not r.peqs:
-            message=autoeq_error_vn("NO_APPROVED_PEQ")
+            message=("Auto EQ PREVIEW ONLY: không có PEQ an toàn; "
+                     "đang hiển thị đáp tuyến gốc, Export HOLD.")
             print("V8136_AUTOEQ_NO_PEQ",message,flush=True)
             self.notice(message,getattr(self.engine,"graph_mag",None))
         self._refresh_export_gate()  # HOLD until independent native match.
@@ -1082,18 +1084,21 @@ def _fir_design_and_preview(freq,h,coh,taps,fs,name,digest,revision,lf=30,hf=160
     def design(count):
         from remix_duo.core.fir_quality_gate import evaluate_fir_quality
         if mode=="phase":
+            f=np.asarray(freq,float);c=np.asarray(coh,float)
+            failures=[]
+            preview_fallbacks=[]
             # Fast physical-coverage preflight avoids designing a kernel that
             # cannot affect even half an octave inside the requested ROI.
             # This is tap physics, independent of measurement coherence.
             phase_lf=max(float(lf),12.*fs/float(count))
             if phase_lf>=hf or (np.log2(hf/phase_lf)<.5):
-                raise ValueError(
+                failures.append(
+                    "PREVIEW_ONLY: "+
                     f"FIR Phase {count} taps chỉ sửa từ {phase_lf:.0f} Hz; "
                     "không đủ 0.5 octave trong LF–HF")
             # Require adequate measured phase evidence before authorizing a
             # physical Phase FIR. Design remains coherence-independent, but
             # low-confidence data never grants export/DSP permission.
-            f=np.asarray(freq,float);c=np.asarray(coh,float)
             mid=np.sqrt(float(lf)*float(hf))
             for lower,upper,section in ((lf,hf,"TOTAL"),
                                         (lf,mid,"LF"),(mid,hf,"HF")):
@@ -1101,10 +1106,9 @@ def _fir_design_and_preview(freq,h,coh,taps,fs,name,digest,revision,lf=30,hf=160
                 good=roi&np.isfinite(c)&(c>=.65)
                 if (int(good.sum())<25 or not np.any(roi) or
                         float(good.sum()/roi.sum())<.65):
-                    raise ValueError(
-                        f"FIR Phase {section} HOLD: coherence≥0.65 "
+                    failures.append(
+                        f"PREVIEW_ONLY: FIR Phase {section} coherence≥0.65 "
                         f"chỉ {good.sum()}/{roi.sum()} bins")
-            failures=[]
             for strength in (1.,.75,.5,.25):
                 result=design_phase_only_fir(
                     freq,h,coh,taps=count,fs=fs,source=name,lf=lf,hf=hf,
@@ -1137,9 +1141,18 @@ def _fir_design_and_preview(freq,h,coh,taps,fs,name,digest,revision,lf=30,hf=160
                         phase_quality_bins=n)
                     return result,preview
                 failures.append(
-                    f"{strength:.0%}: "+"; ".join(verdict.reasons)[:150])
-            raise ValueError("FIR PHASE QUALITY HOLD: " +
-                             " | ".join(failures))
+                    f"PREVIEW_ONLY: {strength:.0%}: "+
+                    "; ".join(verdict.reasons)[:300])
+                metric=(float(verdict.phase_after_deg)
+                        if verdict.phase_after_deg is not None and
+                           np.isfinite(verdict.phase_after_deg)
+                        else float("inf"))
+                preview_fallbacks.append((metric,result,preview,tuple(failures)))
+            if preview_fallbacks:
+                _,result,preview,reasons=min(preview_fallbacks,key=lambda x:x[0])
+                result=replace(result,warnings=tuple(result.warnings)+reasons)
+                return result,preview
+            raise ValueError("FIR Phase không tạo được coefficients hữu hạn")
         if mode!="mag":
             raise ValueError("Invalid FIR mode")
         result=design_linear_phase_fir(
@@ -1152,7 +1165,9 @@ def _fir_design_and_preview(freq,h,coh,taps,fs,name,digest,revision,lf=30,hf=160
               "RMS",verdict.mag_rms_before_db,verdict.mag_rms_after_db,
               "REASONS",verdict.reasons,flush=True)
         if not verdict.accepted:
-            raise ValueError("FIR MAG QUALITY HOLD: "+"; ".join(verdict.reasons))
+            result=replace(result,warnings=tuple(result.warnings)+(
+                "PREVIEW_ONLY: FIR MAG quality: "+
+                "; ".join(verdict.reasons),))
         return result,preview
     if int(taps):
         return design(int(taps))
@@ -1470,7 +1485,8 @@ class FIRDialog(TFDialog):
         return True
 
     def _refresh_export(self):
-        ready=self._proof_current(check_hash=True)
+        ready=(self._proof_current(check_hash=True) and
+               self._quality_export_ok())
         self.export_txt.setEnabled(ready)
         self.export_wav.setEnabled(ready)
         if hasattr(self,"export_fir"):
@@ -1480,6 +1496,13 @@ class FIRDialog(TFDialog):
             allowed=ready and not validate(
                 self.result,get_profile(self.dsp_profile.currentData()))
             self.export_dsp.setEnabled(bool(allowed))
+
+    def _quality_export_ok(self):
+        """Preview is unconditional; unsafe/unproven taps never leave the app."""
+        result=getattr(self,"result",None)
+        return bool(result is not None and not any(
+            str(w).startswith("PREVIEW_ONLY:")
+            for w in (getattr(result,"warnings",()) or ())))
 
     def show_export_fir_menu(self):
         """Single export button -> generic TXT or supported vendor profile.
@@ -1905,16 +1928,19 @@ class FIRDialog(TFDialog):
 
     def _export(self,fmt):
         # Verify again *after* the user chooses a destination, before writing.
-        if not self._proof_current(check_hash=True):
+        if (not self._proof_current(check_hash=True) or
+                not self._quality_export_ok()):
             self.invalidate()
-            return self.warning("FIR Export HOLD: Trace/Fs/source bytes đã thay đổi")
+            return self.warning(
+                "FIR Export HOLD: preview chưa đạt quality hoặc nguồn đã thay đổi")
         is_wav=fmt=="wav"
         name="RemiX_Dou_FIR.wav" if is_wav else "RemiX_Dou_FIR.txt"
         dest,_=QFileDialog.getSaveFileName(self,"Xuất FIR "+fmt.upper(),name,
                          "WAV (*.wav)" if is_wav else "Text (*.txt)",
                          options=QFileDialog.Option.DontUseNativeDialog)
         if not dest:return
-        if not self._proof_current(check_hash=True):
+        if (not self._proof_current(check_hash=True) or
+                not self._quality_export_ok()):
             self.invalidate()
             return self.warning("FIR Export HOLD: nguồn đổi trong lúc chọn file")
         try:

@@ -69,8 +69,10 @@ def test_synthetic_actual_boost_overshoot_blocked():
     assert v.max_filter_boost_db>6.5
     assert any("Boost FIR thực" in reason for reason in v.reasons)
 
-def test_gui_worker_blocks_phase_without_usable_lf_hf():
+def test_gui_worker_previews_phase_without_usable_lf_hf():
     tr=source("0 delay.trf")
-    with pytest.raises(ValueError,match="không đủ 0.5 octave"):
-        _fir_design_and_preview(tr.hz,tr.h,tr.coherence,512,48000,
-                                "0 delay","qa",88,35,188,"phase",False,1/6)
+    result,preview=_fir_design_and_preview(
+        tr.hz,tr.h,tr.coherence,512,48000,
+        "0 delay","qa",88,35,188,"phase",False,1/6)
+    assert len(result.taps)==512 and preview.mode=="phase"
+    assert any(str(w).startswith("PREVIEW_ONLY:") for w in result.warnings)

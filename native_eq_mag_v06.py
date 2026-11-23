@@ -530,15 +530,18 @@ class NativeAutoEQMag(QWidget):
 
     def set_data(self,freq,h,coh,proposal,source_index,source_name):
         self.clear()
-        approved=(proposal is not None and (
-            (proposal.status=="PREVIEW_READY" and bool(proposal.peqs)) or
-            (proposal.status=="NO_EQ_NEEDED" and not proposal.peqs)))
+        # Presentation is broader than authorization: an unsafe/no-solution
+        # result may show the original bypass curve, but EQ export remains
+        # restricted to PREVIEW_READY by EQDialog's snapshot/native gate.
+        approved=(proposal is not None and
+                  np.isfinite(proposal.before_db).all() and
+                  np.isfinite(proposal.after_db).all())
         if not approved:return
         try:
             self.source=build_state(freq,h,coh,proposal.peqs,
                  fs=proposal.fs,source_index=int(source_index),
                  source_name=source_name,revision=self.revision,
-                 allow_bypass=(proposal.status=="NO_EQ_NEEDED"),
+                 allow_bypass=not bool(proposal.peqs),
                  display_smooth_oct=float(
                      self.hub.engine.mag_smooth.currentData() or 0.))
             eq=getattr(self.hub,"eq",None)

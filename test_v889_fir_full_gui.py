@@ -61,8 +61,9 @@ def test_fir_full_mag_phase_drag_design_export_switch_hide(tmp_path,monkeypatch)
         assert abs(fir.fir_hf.value()-3350)<10
         QTest.mouseClick(fir.calculate,Qt.MouseButton.LeftButton)
         wait_fir(app,fir)
-        assert fir.result is None
-        assert "HOLD" in fir.details.toPlainText()
+        assert fir.result is not None
+        assert any(str(w).startswith("PREVIEW_ONLY:")
+                   for w in fir.result.warnings)
         assert not fir.phase_plus.isChecked()
         assert not fir.phase_plus.isHidden()  # parent may be hidden in offscreen QA
         assert not fir.export_wav.isEnabled()

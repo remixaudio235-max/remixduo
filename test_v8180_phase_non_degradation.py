@@ -53,25 +53,27 @@ def test_gui_auto_taps_phase_chooses_safe_4096_and_damped_strength():
  assert p.phase_rms_after < p.phase_rms_before
  assert "AUTO TAPS" in " ".join(map(str,r.warnings))
 
-def test_gui_forced_unsafe_phase_512_fails_closed():
+def test_gui_forced_unsafe_phase_512_returns_preview_only():
  t=get("0 delay.trf")
- with pytest.raises(ValueError,match="FIR Phase"):
-  _fir_design_and_preview(t.hz,t.h,t.coherence,512,48000,
-                          "0 delay","SHA",1,35,188,"phase",False,1/6)
+ result,preview=_fir_design_and_preview(t.hz,t.h,t.coherence,512,48000,
+                         "0 delay","SHA",1,35,188,"phase",False,1/6)
+ assert len(result.taps)==512 and preview.mode=="phase"
+ assert any(str(w).startswith("PREVIEW_ONLY:") for w in result.warnings)
 
 def test_low_coherence_hf_is_hold_even_if_old_rms_improves():
  v,p,r=verdict("SUB SKY 2.trf",114,379,4096)
  assert not v.accepted
  assert any("HF: chỉ" in reason for reason in v.reasons)
 
-def test_suite_phase_lf_hf_third_guard_blocks_hidden_regression():
+def test_suite_phase_lf_hf_third_guard_marks_preview_only():
  t=get("TUNNINNGGG-3-1.trf",9)
  v,p,r=verdict("TUNNINNGGG-3-1.trf",114,379,4096,1.,edition=9)
  assert not v.accepted
  assert any("HF_THIRD: Phase tệ hơn" in reason for reason in v.reasons)
- with pytest.raises(ValueError,match="FIR QUALITY HOLD"):
-  _fir_design_and_preview(t.hz,t.h,t.coherence,0,48000,
-                          "suite","SHA",1,114,379,"phase",False,1/6)
+ result,preview=_fir_design_and_preview(t.hz,t.h,t.coherence,0,48000,
+                         "suite","SHA",1,114,379,"phase",False,1/6)
+ assert result.taps.size and preview.mode=="phase"
+ assert any(str(w).startswith("PREVIEW_ONLY:") for w in result.warnings)
 
 def test_visual_phase_not_truncated_by_trusted_coherence_gate():
  t=get("SUB SKY 2.trf")
