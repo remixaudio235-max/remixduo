@@ -43,7 +43,7 @@ def test_hint_colour_is_trusted_first(monkeypatch):
     calls=[]
     class Fit:
         def __init__(self,ok):self.accepted=ok;self.score=1.
-    def fake(image,rect,win,f,db,coh,trace_color):
+    def fake(image,rect,win,f,db,coh,trace_color,**_geometry):
         calls.append(trace_color)
         return Fit(trace_color in ("#6677A8","red","magenta"))
     monkeypatch.setattr(sel,"fit_native_mag",fake)

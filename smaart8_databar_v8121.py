@@ -62,10 +62,15 @@ def v8_row_states(image,host,*,dpi=96):
         # Native TRF glyphs are ~18*DPI pixels tall. Large coloured
         # control panels BELOW the Data Bar cannot be trace icons.
         # Keep selected-row glyphs up to 29*DPI, but reject footer blocks.
-        if not (round(14*sy)<=c-a<=round(29*sy)):
+        if not (round(16*sy)<=c-a<=round(29*sy)):
             continue
         cols=np.flatnonzero(colorful[a:c].any(axis=0))
         bx0,bx1=x0+int(cols.min()),x0+int(cols.max())+1
+        # Session Data's folder starts at the far-left gutter and ends before
+        # the trace document core. A selected trace may also start at x=20,
+        # but its row highlight spans beyond the full core, so retain it.
+        if bx0<round(24*sx) and bx1<round(41*sx):
+            continue
         # Never identify a Session Data folder by colour alone. Smaart 8
         # permits orange/yellow/red saved TRF icons; the previous heuristic
         # removed valid OFF files at 125% (indices 1 and 6).

@@ -40,7 +40,8 @@ class Sim:
         def item(i):
             def rect():
                 sim.rect_calls+=1
-                return NS(top=TOP+i*PITCH-sim.value,left=10)
+                top=TOP+i*PITCH-sim.value
+                return NS(top=top,bottom=top+18,left=10)
             return NS(rectangle=rect)
         self.rows={i:item(i) for i in range(N)}
 

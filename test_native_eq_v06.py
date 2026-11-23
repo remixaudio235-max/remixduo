@@ -62,7 +62,7 @@ def test_ambiguous_native_ref_color_scores_fail_closed(monkeypatch):
     import smaart_eq_color_select as selector
     _,s=qa_source()
     scores={"cyan":.89,"teal":.2,"blue":.87,"red":.3,"green":.2,"magenta":.2,"gold":.2}
-    def fake_fit(img,rect,window,f,db,coh,*,trace_color):
+    def fake_fit(img,rect,window,f,db,coh,*,trace_color,**_geometry):
         score=scores[trace_color]
         return NativeMagFit(200.,11.2,.0,score,.30,221,
                             score>.6,"QA synthetic overlap")

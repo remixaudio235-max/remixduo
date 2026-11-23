@@ -4,13 +4,13 @@ ROOT=Path(__file__).resolve().parent
 
 
 def test_release_version_is_consistent():
-    assert 'version = "8.159.0"' in (ROOT/'pyproject.toml').read_text('utf-8')
-    assert '__version__ = "8.159"' in (
+    assert 'version = "8.181.0"' in (ROOT/'pyproject.toml').read_text('utf-8')
+    assert '__version__ = "8.181"' in (
         ROOT/'src/remix_duo/__init__.py').read_text('utf-8')
-    installer=(ROOT/'remix_duo_production_v8159.iss').read_text('utf-8')
-    assert '#define MyAppVersion "8.159"' in installer
-    assert 'VersionInfoVersion=8.159.0.0' in installer
-    assert 'RemiXDuo_Setup_V8.159' in installer
+    installer=(ROOT/'remix_duo_r65_full_release_qa.iss').read_text('utf-8')
+    assert '#define MyAppVersion "8.181"' in installer
+    assert 'VersionInfoVersion=8.181.0.0' in installer
+    assert 'RemiXDuo_QA_V8.181_R65_Full_Release_Setup' in installer
     assert '"psutil>=5.9; sys_platform == \'win32\'"' in (
         ROOT/'pyproject.toml').read_text('utf-8')
 

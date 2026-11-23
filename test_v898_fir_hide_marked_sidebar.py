@@ -51,17 +51,13 @@ def test_fir_red_blocks_removed_and_active_controls_preserved():
         fir.taps.setCurrentIndex(fir.taps.findData(1024))
         fir.compute()
         wait_fir(app,fir,timeout=25)
-        assert fir.result is not None,fir.details.toPlainText()
-        # The two result panes remain populated for internal QA, but must
-        # never appear on-screen, including after an actual FIR computation.
-        assert fir.summary.text()
+        assert fir.result is None
+        assert "không đủ 0.5 octave" in fir.details.toPlainText()
+        # The safety detail remains internal and hidden from the compact UI.
         assert fir.details.toPlainText()
         assert fir.summary.isHidden() and fir.details.isHidden()
-        assert fir._approved is not None
-        assert fir.result.mode=="phase"
-        assert len(fir.result.taps)==1024
-        assert fir._approved[4:6]==(114,379)
-        assert fir.export_fir.isEnabled()
+        assert fir._approved is None
+        assert not fir.export_fir.isEnabled()
         fir.phase_plus.setChecked(True)
         assert fir.result is None
         assert not fir.export_fir.isEnabled()

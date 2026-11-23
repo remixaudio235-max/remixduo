@@ -37,7 +37,7 @@ class StableTickGate:
         pair=getattr(result,"pair",None)
         rows=int(getattr(result,"rows",0) or 0)
         verified=int(getattr(result,"verified",0) or 0)
-        names=tuple(active_names)
+        names=tuple(active_names or ())
         source_id=getattr(result,"source_id",None)
         frame_id=getattr(result,"frame_id",None)
         witnessed=getattr(result,"observed_active_names",None)

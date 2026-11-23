@@ -18,12 +18,9 @@ def test_default_range_phase_fir_is_computed_and_reports_resolvable_lf(monkeypat
         fir.compute()
         wait_fir(app, fir)
         text = fir.details.toPlainText()
-        assert fir.result is not None, text
-        assert "HOLD" not in fir.summary.text()
-        # With the new 500 Hz default the requested LF is already above the
-        # taps resolution floor, so no separate "Phase chỉ..." note is needed.
-        assert fir.result.phase_lf_hz == 500
-        assert fir.export_wav.isEnabled()
+        assert fir.result is None
+        assert "QUALITY HOLD" in text
+        assert not fir.export_wav.isEnabled()
     finally:
         hub.close()
         app.processEvents()

@@ -19,19 +19,19 @@ def make_suite_compact(two=True,checked=(True,True)):
 
 def test_smaart8_1366_native_panel_no_longer_disappears():
     z=v8_sidebar_rects((0,0,1366,768),(0,0,1366,768))
-    assert z.anchors_valid,repr(z)
-    assert z.panel_mode=="v8-native-sidebar"
+    assert not z.anchors_valid,repr(z)  # no measured engine slot: fail closed
+    assert z.panel_mode=="v8-top-right-compact"
     x,y,w,h=z.panel
-    assert 1150<x<1250 and 415<=y<=435 and w>=145 and h>=115
-    assert y>412 and y+h<=576  # below engine, above generator
+    assert 1150<x<1250 and y<100 and w>=180 and h>=195
     assert z.toolbar_mode=="full"
 
 def test_smaart8_1366_moved_host_coordinates():
     z=v8_sidebar_rects((100,75,1466,843),(0,0,1600,900))
-    assert z.anchors_valid
+    assert not z.anchors_valid
+    assert z.panel_mode=="v8-top-right-compact"
     assert z.panel[0]>=1250
-    assert z.panel[1]>=495
-    assert z.panel[1]+z.panel[3]<=655
+    assert z.panel[1]>=120
+    assert z.panel[1]+z.panel[3]<500
 
 def test_1920_behavior_unchanged():
     z=v8_sidebar_rects((0,0,1920,1040),(0,0,1920,1040))

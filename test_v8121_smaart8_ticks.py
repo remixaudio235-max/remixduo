@@ -74,6 +74,8 @@ def _observer(monkeypatch,tmp_path,frame):
     monkeypatch.setattr(api,"process_smaart_major",lambda h:8)
     monkeypatch.setattr(live,"printwindow_image",lambda h:frame)
     monkeypatch.setattr(live.win32gui,"GetWindowRect",lambda h:HOST)
+    import ctypes
+    monkeypatch.setattr(ctypes.windll.user32,"GetDpiForWindow",lambda h:96)
     return live.LiveDataBarV7(sd)
 
 

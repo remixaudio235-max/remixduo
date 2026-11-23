@@ -1082,14 +1082,17 @@ def _fir_design_and_preview(freq,h,coh,taps,fs,name,digest,revision,lf=30,hf=160
     def design(count):
         from remix_duo.core.fir_quality_gate import evaluate_fir_quality
         if mode=="phase":
-            # Fast physical-coverage preflight prevents spending hundreds
-            # of milliseconds computing impossible 512/1024-tap LF phase.
+            # Fast physical-coverage preflight avoids designing a kernel that
+            # cannot affect even half an octave inside the requested ROI.
+            # This is tap physics, independent of measurement coherence.
             phase_lf=max(float(lf),12.*fs/float(count))
             if phase_lf>=hf or (np.log2(hf/phase_lf)<.5):
                 raise ValueError(
                     f"FIR Phase {count} taps chỉ sửa từ {phase_lf:.0f} Hz; "
                     "không đủ 0.5 octave trong LF–HF")
-            # Reject intrinsically untrustworthy LF or HF bins BEFORE design.
+            # Require adequate measured phase evidence before authorizing a
+            # physical Phase FIR. Design remains coherence-independent, but
+            # low-confidence data never grants export/DSP permission.
             f=np.asarray(freq,float);c=np.asarray(coh,float)
             mid=np.sqrt(float(lf)*float(hf))
             for lower,upper,section in ((lf,hf,"TOTAL"),

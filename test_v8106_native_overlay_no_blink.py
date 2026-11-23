@@ -288,7 +288,8 @@ def test_fir_display_grace_covers_measured_native_fit_without_blink(monkeypatch)
 def test_fir_tick_preserves_verified_frame_while_panel_hidden():
     """Dock visibility is a proof pause, never a reason to erase valid FIR."""
     frame=fir_prior(revision=2,age=.60)
-    fake=NS(frame=frame,_last_allowed_reason="hub_hidden",
+    fake=NS(frame=frame,source=None,future=None,
+            _last_allowed_reason="hub_hidden",
             _allowed=lambda:0,_publish=lambda:None)
     F.NativeFIROverlay.tick(fake)
     assert fake.frame is frame

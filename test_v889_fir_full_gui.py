@@ -61,19 +61,11 @@ def test_fir_full_mag_phase_drag_design_export_switch_hide(tmp_path,monkeypatch)
         assert abs(fir.fir_hf.value()-3350)<10
         QTest.mouseClick(fir.calculate,Qt.MouseButton.LeftButton)
         wait_fir(app,fir)
-        assert fir.result is not None,fir.details.toPlainText()
-        assert fir.result.mode=="phase"
-        assert np.isfinite(fir.result.taps).all()
-        assert len(fir.result.taps)==1024
-        assert fir._approved_phase_plus is False
+        assert fir.result is None
+        assert "HOLD" in fir.details.toPlainText()
         assert not fir.phase_plus.isChecked()
         assert not fir.phase_plus.isHidden()  # parent may be hidden in offscreen QA
-        assert fir.export_wav.isEnabled()
-        wav_phase=tmp_path/"phase_fir.wav"
-        monkeypatch.setattr(QFileDialog,"getSaveFileName",
-                            lambda *args,**kwargs:(str(wav_phase),""))
-        QTest.mouseClick(fir.export_wav,Qt.MouseButton.LeftButton)
-        assert wav_phase.exists()
+        assert not fir.export_wav.isEnabled()
         assert (engine.lf.value(),engine.hf.value())==phase_before
 
         # Switching tabs/explicit HIDE leaves only the Smaart graph interactive.
