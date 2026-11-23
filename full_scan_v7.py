@@ -79,7 +79,10 @@ def _uia(hwnd):
     # threshold silently misses the *real* Data Bar scrollbar at 150%,
     # then invents a static viewport beyond the bottom of the window.
     dpi=int(ctypes.windll.user32.GetDpiForWindow(hwnd))
-    dpi_scale=max(1.0,min(1.5,dpi/96.0))
+    # Follow the host's real per-monitor DPI.  Capping this at 150% made a
+    # clean launch on 175-400% displays search the unscaled left gutter and
+    # silently fall back to a fake non-scrollable Data Bar.
+    dpi_scale=(dpi/96.0) if 72<=dpi<=384 else 1.0
     root_rect=root.rectangle()
     limit_x=root_rect.left+int(round(260*dpi_scale))
     min_height=int(round(180*dpi_scale))

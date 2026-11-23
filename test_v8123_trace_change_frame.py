@@ -13,7 +13,7 @@ from pathlib import Path
 from PIL import Image
 from selection_v7 import icon_color
 from full_scan_v7 import _page
-from smaart8_databar_v8121 import v8_row_states
+from smaart8_databar_v8121 import v8_icon_color_rect,v8_row_states
 
 FIX=Path(__file__).with_name("fixtures")
 
@@ -23,6 +23,12 @@ def test_icon_color_real_smaart8_rows():
     colors=[icon_color(im,(20,y0,50,y1))
             for y0,y1,_ in v8_row_states(im,(0,0,1920,1032))]
     assert colors==["#00735F","#054691","#AF3778"]
+
+
+def test_v8_color_roi_uses_window_dpi_not_1920_width():
+    # At 150%, the native icon gutter is x=30..75 even on a 1920px host.
+    # Scaling from host width would incorrectly keep x=20..50.
+    assert v8_icon_color_rect(144,210,238,host_top=100)==(30,110,75,138)
 
 
 def test_page_reports_suite_icon_colors_for_ticked_rows():

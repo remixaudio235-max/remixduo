@@ -1692,8 +1692,9 @@ class App(QWidget):
         # Parse only if stat changed. This is a saved-config sync,
         # NOT an unsupported claim of instant live Smaart GUI parity.
         try:
-            from smaart_smooth_sync_v811 import CONFIG
-            stamp=CONFIG.stat().st_mtime_ns
+            from smaart_smooth_sync_v811 import smoothing_config_path
+            config=smoothing_config_path()
+            stamp=config.stat().st_mtime_ns if config is not None else -1
         except OSError:
             stamp=-1
         if not force and stamp==self._last_smooth_ns:return

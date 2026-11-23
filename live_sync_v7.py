@@ -192,7 +192,7 @@ class LiveDataBarV7:
 
     def _poll_v8(self,hwnd,now):
         """V8.121 read-only Smaart 8 tick map: pixel icons + index order."""
-        from smaart8_databar_v8121 import v8_row_states
+        from smaart8_databar_v8121 import v8_icon_color_rect,v8_row_states
         if self.ready and hwnd!=self.hwnd:
             # Never let a Smaart Suite map or prior Smaart 8 window
             # masquerade as proof for a newly selected process.
@@ -236,10 +236,9 @@ class LiveDataBarV7:
         self.states=dict(enumerate(states))
         try:
             from selection_v7 import icon_color
-            sx=(host[2]-host[0])/1920.
             for name,(y0,y1,_state) in zip(order,rows):
-                color=icon_color(image,(round(20*sx),y0-host[1],
-                                        round(50*sx),y1-host[1]))
+                color=icon_color(image,v8_icon_color_rect(
+                    dpi,y0,y1,host_top=host[1]))
                 if color:self.colors_by_name[str(name)]=color
         except Exception:
             pass

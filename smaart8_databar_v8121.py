@@ -21,6 +21,15 @@ def _is_folder(mean_rgb):
     return r>110 and b<45 and r>g*1.25      # orange folder (152,99,5)
 
 
+def v8_icon_color_rect(dpi,y0,y1,*,host_top=0):
+    """Return the native icon-colour ROI in PrintWindow coordinates."""
+    if not isinstance(dpi,(int,float)) or not (72<=dpi<=384):
+        raise ValueError("invalid window DPI")
+    scale=float(dpi)/96.0
+    return (round(20*scale),int(y0)-int(host_top),
+            round(50*scale),int(y1)-int(host_top))
+
+
 def v8_row_states(image,host,*,dpi=96):
     """Native image-pixel trace rows, independently of screen resolution.
 

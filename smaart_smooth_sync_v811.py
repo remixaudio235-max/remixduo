@@ -36,13 +36,20 @@ class SavedSmooth:
     phase_verified:bool
     modified_ns:int
 
+
+def smoothing_config_path():
+    """Resolve the active edition's redirected Documents config path."""
+    from smaart_runtime_paths_v868 import running_major,saved_config
+    edition=running_major()
+    if edition==8:
+        return None
+    return saved_config(edition)
+
 def read_saved_smooth(path=None):
     if path is None:
-        from smaart_runtime_paths_v868 import running_major
-        if running_major()==8:
-            # Smaart 8 smoothing IDs are not yet calibrated against its GUI.
+        path=smoothing_config_path()
+        if path is None:
             return None
-        path=CONFIG
     path=Path(path)
     try:
         mod=path.stat().st_mtime_ns

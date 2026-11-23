@@ -16,7 +16,7 @@ def rect(l,t,r,b):
     return NS(left=l,top=t,right=r,bottom=b,height=lambda:b-t,width=lambda:r-l)
 
 
-def fake_root(with_bar,n=7):
+def fake_root(with_bar,n=7,bar_left=180,bar_bottom=900):
     tree=NS(rectangle=lambda:rect(9,163,189,163+22*n),
             element_info=NS(control_type="Tree"))
     rows=[]
@@ -24,7 +24,7 @@ def fake_root(with_bar,n=7):
         r=rect(9,163+22*i,231,185+22*i)
         rows.append(NS(element_info=NS(name=f"Level 0 row {i}"),
                        rectangle=(lambda r=r:r),parent=lambda:tree))
-    bars=[NS(rectangle=lambda:rect(180,160,189,900))] if with_bar else []
+    bars=[NS(rectangle=lambda:rect(bar_left,160,bar_left+9,bar_bottom))] if with_bar else []
     def descendants(control_type):
         return {"ScrollBar":bars,"TreeItem":rows,"Tree":[tree]}.get(control_type,[])
     return NS(descendants=descendants,rectangle=lambda:rect(0,0,1920,1032))
@@ -53,6 +53,16 @@ def test_scrollbar_path_unchanged(monkeypatch):
     patch_root(monkeypatch,root)
     _,bar,_=scanner._uia(1)
     assert bar.rectangle().bottom==900
+
+
+def test_scrollbar_search_follows_per_monitor_200_percent_dpi(monkeypatch):
+    """A clean launch on a 200% laptop must not keep the old 150% cap."""
+    root=fake_root(True,bar_left=450,bar_bottom=880)
+    patch_root(monkeypatch,root)
+    monkeypatch.setattr(scanner.ctypes.windll.user32,"GetDpiForWindow",
+                        lambda hwnd:192)
+    _,bar,_=scanner._uia(1)
+    assert bar.rectangle().left==450
 
 
 def test_no_rows_and_no_scrollbar_still_fails_closed(monkeypatch):
