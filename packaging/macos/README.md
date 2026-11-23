@@ -20,6 +20,8 @@ python3.11 -m venv .venv
 On an **Apple Silicon Mac**, use native arm64 Python and replace `x86_64`
 with `arm64`. Rosetta and cross-compilation are rejected. Separate native
 DMGs are intentional; do not lipo-merge frozen Python executables.
+The `.app` metadata and DMG filename derive their version from
+`pyproject.toml`; do not hard-code a second release version in the Mac builder.
 
 Local alpha artifacts are not a public release. This script does not bypass
 Gatekeeper or grant Screen Recording/Accessibility permissions. `--release`

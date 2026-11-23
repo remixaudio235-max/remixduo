@@ -11,8 +11,17 @@ import hashlib
 import json
 import os
 import plistlib
+import tomllib
 
 ROOT=Path(__file__).resolve().parents[2]
+
+def project_version():
+    data=tomllib.loads((ROOT/'pyproject.toml').read_text(encoding='utf-8'))
+    version=str(data['project']['version'])
+    parts=version.split('.')
+    if len(parts)!=3 or not all(part.isdigit() for part in parts):
+        raise RuntimeError('pyproject project.version must be numeric MAJOR.MINOR.PATCH')
+    return version
 
 def preflight(arch, *, host=None, machine=None, version=None, translated=None):
     host=sys.platform if host is None else host
@@ -71,6 +80,7 @@ def main(argv=None):
     parser.add_argument('--notary-profile',default=os.environ.get('DUO_NOTARY_PROFILE',''))
     args=parser.parse_args(argv)
     preflight(args.arch)
+    version=project_version()
     digest=source_digest()
     if args.release:release_gate(args.receipt,args.identity,args.notary_profile,digest)
     if sys.version_info[:2]!=(3,11):raise RuntimeError('Use native Python 3.11')
@@ -95,7 +105,8 @@ def main(argv=None):
     app=destination/(name+'.app')
     plist=app/'Contents/Info.plist'
     info=plistlib.loads(plist.read_bytes())
-    info.update(LSMinimumSystemVersion='13.0',CFBundleShortVersionString='8.87',CFBundleVersion='8.87.0',NSHighResolutionCapable=True)
+    info.update(LSMinimumSystemVersion='13.0',CFBundleShortVersionString=version,
+                CFBundleVersion=version,NSHighResolutionCapable=True)
     plist.write_bytes(plistlib.dumps(info))
     # Re-seal the outer bundle after Info.plist metadata changes. Nested binaries
     # have already been signed by PyInstaller; do not deep-sign dependencies.
@@ -107,7 +118,7 @@ def main(argv=None):
     # Frozen read-only check: no GUI/audio/license write.
     subprocess.run([str(app/'Contents/MacOS'/name),'--selfcheck'],cwd=build,check=True)
     channel='release' if args.release else 'overlay-qa'
-    dmg=destination/f'RemiXDuo-8.87-{channel}-{args.arch}.dmg'
+    dmg=destination/f'RemiXDuo-{version}-{channel}-{args.arch}.dmg'
     subprocess.run(['/usr/bin/hdiutil','create','-ov','-volname','RemiX Duo Offline Alpha',
                     '-srcfolder',str(app),'-format','UDZO',str(dmg)],check=True)
     if args.release:

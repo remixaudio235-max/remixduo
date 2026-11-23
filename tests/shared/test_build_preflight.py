@@ -24,6 +24,9 @@ def test_no_release_bundle_without_native_acceptance():
     b=builder()
     with pytest.raises(RuntimeError,match='native acceptance'): b.release_gate()
 
+def test_mac_artifact_version_matches_project_version():
+    assert builder().project_version() == '8.181.0'
+
 def test_selfcheck_from_unrelated_cwd(tmp_path):
     result=subprocess.run([sys.executable,str(ROOT/'run_remix_duo.py'),'--selfcheck'],cwd=tmp_path,capture_output=True,text=True)
     assert result.returncode==0,result.stderr
