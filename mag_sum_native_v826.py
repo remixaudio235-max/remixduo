@@ -183,12 +183,29 @@ def capture_sum_mag_axis(hwnd,mag_rect,traces):
     if process_smaart_major(hwnd)==8:
         # The Smaart8 native TF window can span 10–10k, NOT the 20–20k
         # assumed in the old SUM Mag matcher (and model overlay).
-        source=_smaart8_native_source_axis(image,mag_rect,window_rect,traces)
+        # Some responsive Smaart 8 layouts report the whole plot role box,
+        # including its left/right axis gutters.  Source X registration must
+        # use the inner raster.  Keep the original first, then test only small
+        # symmetric gutter insets and require the same strict trace match.
+        candidates=[mag_rect]
+        x,y,w,h=map(int,mag_rect)
+        for inset in (20,27,30,35):
+            if w>2*inset+320:
+                candidates.append((x+inset,y,w-2*inset,h))
+        matches=[]
+        for candidate in candidates:
+            fit=_smaart8_native_source_axis(image,candidate,window_rect,traces)
+            if fit.accepted:
+                matches.append((float(fit.score),candidate,fit))
+        source=max(matches,key=lambda item:item[0])[2] if matches else fit
         if not source.accepted:
             return source
+        source_rect=max(matches,key=lambda item:item[0])[1]
+        if source_rect!=mag_rect:
+            grid=fit_native_mag_grid(image,source_rect,window_rect,interval)
         if grid.accepted:
             span=source.y_max-source.y_min
-            measured=float(mag_rect[3])/span
+            measured=float(source_rect[3])/span
             if (grid.px_per_db<=0 or
                  abs(measured-grid.px_per_db)/grid.px_per_db>.12):
                 return SumMagAxis(False,reason="Smaart8 source/grid Y scales conflict")
