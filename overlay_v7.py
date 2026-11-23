@@ -577,7 +577,7 @@ class QAHost(QWidget):
     ticked=pyqtSignal(object)
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("RemiX Duo 8.180 · Auto Phase")
+        self.setWindowTitle("RemiX Duo 8.181 · Auto Phase")
         self.setGeometry(65,40,1530,930)
         self.setStyleSheet("background:#080b12;color:#c7d5e8")
         self.sources=[str(DIR/"QA_A.trf"),str(DIR/"QA_B.trf")]
@@ -3348,7 +3348,7 @@ def main(argv=None):
     if getattr(sys, "_remix_duo_qa_signed_build", False):
         app.setApplicationName("RemiX Duo QA V8.87")
     else:
-        app.setApplicationName("RemiX Duo 8.180")
+        app.setApplicationName("RemiX Duo 8.181")
     # V8.74: product-scoped Ed25519 license gate, BEFORE any Smaart/GUI IO.
     # No demo bypass: all application entrypoints require a signed DUO_PRO key.
     # Cloudflare is mandatory for the commercial frozen EXE. Developer

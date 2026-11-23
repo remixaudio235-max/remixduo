@@ -69,7 +69,7 @@ def build(output: Path, temp: Path) -> dict:
                              "embedsignature": False,
                              "emit_code_comments": False},
         annotate=False, force=True, nthreads=0, quiet=True)
-    setup(name="remixduo-protected-core", version="8.180.0",
+    setup(name="remixduo-protected-core", version="8.181.0",
           ext_modules=compiled,
           script_args=["build_ext", "--build-lib", str(output),
                        "--build-temp", str(temp / "obj")])
